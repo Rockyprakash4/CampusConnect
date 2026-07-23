@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusConnect - Admin Dashboard</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Custom Style -->
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body style="padding-top: 72px;">
+
+  <div id="cc-navbar-container"></div>
+
+  <main class="container py-5 animate-fade-in">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h2 class="fw-bold mb-1"><i class="bi bi-shield-lock text-gradient me-2"></i>Administration Panel</h2>
+        <p class="text-muted small">Moderate content, approve submissions, manage users, and view violations</p>
+      </div>
+      <button class="btn btn-premium btn-sm" data-bs-toggle="modal" data-bs-target="#createCompanyModal"><i class="bi bi-plus-circle me-1"></i> Add Company</button>
+    </div>
+
+    <!-- Stats summary row -->
+    <div class="row g-3 mb-4 text-center">
+      <div class="col-6 col-md-3">
+        <div class="stat-card">
+          <h3 class="fw-bold text-primary mb-1" id="stat-total-users">0</h3>
+          <p class="text-muted small mb-0">Total Users</p>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-card">
+          <h3 class="fw-bold text-warning mb-1" id="stat-pending-posts">0</h3>
+          <p class="text-muted small mb-0">Pending Approvals</p>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-card">
+          <h3 class="fw-bold text-danger mb-1" id="stat-active-reports">0</h3>
+          <p class="text-muted small mb-0">Active Reports</p>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-card">
+          <h3 class="fw-bold text-success mb-1" id="stat-placed-count">0</h3>
+          <p class="text-muted small mb-0">Placed Students</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin Tabs -->
+    <ul class="nav nav-tabs mb-4" id="adminTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="pending-tab" data-bs-toggle="tab" data-bs-target="#pending-pane" type="button" role="tab"><i class="bi bi-clock-history me-2"></i>Pending Approvals</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="users-tab" data-bs-toggle="tab" data-bs-target="#users-pane" type="button" role="tab"><i class="bi bi-people me-2"></i>User Management</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="reports-tab" data-bs-toggle="tab" data-bs-target="#reports-pane" type="button" role="tab"><i class="bi bi-flag me-2"></i>Content Reports</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="companies-tab" data-bs-toggle="tab" data-bs-target="#companies-pane" type="button" role="tab"><i class="bi bi-building me-2"></i>Companies DB</button>
+      </li>
+    </ul>
+
+    <!-- Tabs content -->
+    <div class="tab-content">
+      
+      <!-- PENDING APPROVALS -->
+      <div class="tab-pane fade show active" id="pending-pane" role="tabpanel">
+        <div class="premium-card p-4">
+          <h5 class="fw-bold mb-3 border-bottom pb-2">Experiences Awaiting Approval</h5>
+          <div class="table-responsive">
+            <table class="table align-middle">
+              <thead>
+                <tr>
+                  <th>Contributor</th>
+                  <th>Company</th>
+                  <th>Job Role</th>
+                  <th>CTC</th>
+                  <th>Date Shared</th>
+                  <th class="text-end">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="pending-experiences-table">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- USER MANAGEMENT -->
+      <div class="tab-pane fade" id="users-pane" role="tabpanel">
+        <div class="premium-card p-4">
+          <h5 class="fw-bold mb-3 border-bottom pb-2">Register of User Accounts</h5>
+          <div class="table-responsive">
+            <table class="table align-middle">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Username</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Placement Status</th>
+                  <th class="text-end">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="users-table-body">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- FLAG REPORTS -->
+      <div class="tab-pane fade" id="reports-pane" role="tabpanel">
+        <div class="premium-card p-4">
+          <h5 class="fw-bold mb-3 border-bottom pb-2">Flagged Content Reports</h5>
+          <div class="table-responsive">
+            <table class="table align-middle">
+              <thead>
+                <tr>
+                  <th>Reporter</th>
+                  <th>Target Type</th>
+                  <th>Target ID</th>
+                  <th>Reason</th>
+                  <th>Status</th>
+                  <th class="text-end">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="reports-table-body">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- COMPANIES DB -->
+      <div class="tab-pane fade" id="companies-pane" role="tabpanel">
+        <div class="premium-card p-4">
+          <h5 class="fw-bold mb-3 border-bottom pb-2">Recruitment Partners List</h5>
+          <div class="table-responsive">
+            <table class="table align-middle">
+              <thead>
+                <tr>
+                  <th>Logo</th>
+                  <th>Name</th>
+                  <th>Industry</th>
+                  <th>Website</th>
+                  <th>Average CTC</th>
+                  <th class="text-end">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="companies-table-body">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ADD/EDIT COMPANY MODAL -->
+  <div class="modal fade" id="createCompanyModal" tabindex="-1" aria-labelledby="createCompanyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content glass-card border-0 p-3">
+        <div class="modal-header border-0">
+          <h5 class="modal-title fw-bold" id="createCompanyModalLabel">Register Hiring Partner</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form onsubmit="handleCompanySubmit(event)">
+          <div class="modal-body border-0 d-flex flex-column gap-3">
+            <div>
+              <label for="c-name" class="form-label small fw-semibold">Company Name *</label>
+              <input type="text" id="c-name" class="form-control" placeholder="e.g. Amazon" required>
+            </div>
+            <div>
+              <label for="c-web" class="form-label small fw-semibold">Website URL</label>
+              <input type="url" id="c-web" class="form-control" placeholder="https://amazon.jobs">
+            </div>
+            <div>
+              <label for="c-ind" class="form-label small fw-semibold">Industry Sector</label>
+              <input type="text" id="c-ind" class="form-control" placeholder="e.g. E-Commerce / Cloud Computing">
+            </div>
+            <div>
+              <label for="c-desc" class="form-label small fw-semibold">Description</label>
+              <textarea id="c-desc" class="form-control" rows="3" placeholder="Brief about company recruitment..."></textarea>
+            </div>
+          </div>
+          <div class="modal-footer border-0">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-premium">Register Company</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="cc-footer-container"></div>
+
+  <!-- BootStrap & Custom JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      if (!isLoggedIn()) {
+        window.location.href = "/login.html";
+        return;
+      }
+      
+      const role = getRole();
+      if (role !== "admin") {
+        showToast("Access Denied. Admin credentials required.", "danger");
+        setTimeout(() => { window.location.href = "/dashboard.html"; }, 1500);
+        return;
+      }
+      
+      await loadAdminDashboardData();
+    });
+
+    async function loadAdminDashboardData() {
+      await fetchPendingExperiences();
+      await fetchUsers();
+      await fetchReports();
+      await fetchCompanies();
+      await loadAdminAnalytics();
+    }
+
+    async function loadAdminAnalytics() {
+      try {
+        const res = await apiCall("/admin/analytics");
+        document.getElementById("stat-total-users").innerText = res.stats.total_students;
+        document.getElementById("stat-placed-count").innerText = res.stats.placed_students;
+        document.getElementById("stat-pending-posts").innerText = res.stats.total_experiences - res.stats.placed_students; // Estimating or fetch count
+      } catch (err) {
+        console.error("Failed to load admin analytics.");
+      }
+    }
+
+    // 1. PENDING APPROVALS
+    async function fetchPendingExperiences() {
+      const tbody = document.getElementById("pending-experiences-table");
+      tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4"><div class="spinner-border text-primary" role="status"></div></td></tr>`;
+      
+      try {
+        const data = await apiCall("/admin/experiences/pending");
+        document.getElementById("stat-pending-posts").innerText = data.length;
+        
+        if (data.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted">No placement experiences pending approval.</td></tr>`;
+          return;
+        }
+        
+        let html = "";
+        data.forEach(exp => {
+          html += `
+            <tr>
+              <td>@${exp.author.username}</td>
+              <td><b>${exp.company.name}</b></td>
+              <td>${exp.job_role}</td>
+              <td>${exp.ctc} LPA</td>
+              <td>${new Date(exp.created_at).toLocaleDateString()}</td>
+              <td class="text-end">
+                <a href="/experience.html?id=${exp.id}" class="btn btn-outline-secondary btn-sm me-1" target="_blank"><i class="bi bi-eye"></i> View</a>
+                <button class="btn btn-success btn-sm me-1" onclick="approveExperience(${exp.id})"><i class="bi bi-check2"></i> Approve</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteExperience(${exp.id})"><i class="bi bi-trash"></i> Delete</button>
+              </td>
+            </tr>
+          `;
+        });
+        tbody.innerHTML = html;
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger">Failed to fetch pending experiences.</td></tr>`;
+      }
+    }
+
+    async function approveExperience(id) {
+      try {
+        await apiCall(`/admin/experiences/${id}/approve`, { method: "POST" });
+        showToast("Experience approved successfully!", "success");
+        await loadAdminDashboardData();
+      } catch (err) {
+        showToast(err.message, "danger");
+      }
+    }
+
+    async function deleteExperience(id) {
+      if (!confirm("Are you sure you want to delete this placement experience?")) return;
+      try {
+        await apiCall(`/experiences/${id}`, { method: "DELETE" });
+        showToast("Experience deleted successfully.", "info");
+        await loadAdminDashboardData();
+      } catch (err) {
+        showToast(err.message, "danger");
+      }
+    }
+
+    // 2. USER MANAGEMENT
+    async function fetchUsers() {
+      const tbody = document.getElementById("users-table-body");
+      tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4"><div class="spinner-border text-primary" role="status"></div></td></tr>`;
+      
+      try {
+        const users = await apiCall("/admin/users");
+        let html = "";
+        users.forEach(u => {
+          html += `
+            <tr>
+              <td>${u.id}</td>
+              <td><b>@${u.username}</b></td>
+              <td>${u.email}</td>
+              <td>
+                <select class="form-select form-select-sm d-inline-block w-auto" onchange="changeUserRole(${u.id}, this.value)">
+                  <option value="student" ${u.role === "student" ? "selected" : ""}>Student</option>
+                  <option value="placed student" ${u.role === "placed student" ? "selected" : ""}>Placed Student</option>
+                  <option value="admin" ${u.role === "admin" ? "selected" : ""}>Admin</option>
+                </select>
+              </td>
+              <td><span class="badge ${u.placement_status === "placed" ? "bg-success" : "bg-warning"}">${u.placement_status}</span></td>
+              <td class="text-end">
+                <button class="btn btn-outline-danger btn-sm" onclick="deleteUser(${u.id})"><i class="bi bi-person-x"></i> Delete</button>
+              </td>
+            </tr>
+          `;
+        });
+        tbody.innerHTML = html;
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger">Failed to fetch user accounts.</td></tr>`;
+      }
+    }
+
+    async function changeUserRole(id, role) {
+      try {
+        await apiCall(`/admin/users/${id}/role`, {
+          method: "PUT",
+          body: { role }
+        });
+        showToast("User role updated successfully!", "success");
+        await loadAdminDashboardData();
+      } catch (err) {
+        showToast(err.message, "danger");
+      }
+    }
+
+    async function deleteUser(id) {
+      if (!confirm("Are you sure you want to delete this user? All their posts and relations will be removed!")) return;
+      try {
+        await apiCall(`/admin/users/${id}`, { method: "DELETE" });
+        showToast("User account deleted successfully.", "info");
+        await loadAdminDashboardData();
+      } catch (err) {
+        showToast(err.message, "danger");
+      }
+    }
+
+    // 3. FLAG REPORTS
+    async function fetchReports() {
+      const tbody = document.getElementById("reports-table-body");
+      tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4"><div class="spinner-border text-primary" role="status"></div></td></tr>`;
+      
+      try {
+        const reports = await apiCall("/admin/reports");
+        const activeReports = reports.filter(r => r.status === "Pending");
+        document.getElementById("stat-active-reports").innerText = activeReports.length;
+        
+        if (reports.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted">No content violation reports submitted.</td></tr>`;
+          return;
+        }
+        
+        let html = "";
+        reports.forEach(r => {
+          let badge = r.status === "Pending" ? "bg-danger" : r.status === "Resolved" ? "bg-success" : "bg-secondary";
+          html += `
+            <tr>
+              <td>@${r.author.username}</td>
+              <td><span class="badge bg-secondary">${r.parent_type}</span></td>
+              <td>${r.parent_id}</td>
+              <td><b>${r.reason}</b> <br> <small class="text-muted">${r.details || ''}</small></td>
+              <td><span class="badge ${badge}">${r.status}</span></td>
+              <td class="text-end">
+                ${r.status === "Pending" ? `
+                  <button class="btn btn-success btn-sm me-1" onclick="resolveReport(${r.id}, 'resolve')">Resolve</button>
+                  <button class="btn btn-warning btn-sm me-1" onclick="resolveReport(${r.id}, 'dismiss')">Dismiss</button>
+                  <button class="btn btn-danger btn-sm" onclick="resolveReport(${r.id}, 'delete_item')">Delete Item</button>
+                ` : '<span class="text-muted small">No actions pending</span>'}
+              </td>
+            </tr>
+          `;
+        });
+        tbody.innerHTML = html;
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger">Failed to fetch violation reports.</td></tr>`;
+      }
+    }
+
+    async function resolveReport(reportId, action) {
+      if (action === "delete_item" && !confirm("This action will permanently delete the reported content! Proceed?")) return;
+      try {
+        await apiCall(`/admin/reports/${reportId}/action`, {
+          method: "POST",
+          body: { action }
+        });
+        showToast("Report actions registered successfully.", "success");
+        await loadAdminDashboardData();
+      } catch (err) {
+        showToast(err.message, "danger");
+      }
+    }
+
+    // 4. COMPANIES
+    async function fetchCompanies() {
+      const tbody = document.getElementById("companies-table-body");
+      tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4"><div class="spinner-border text-primary" role="status"></div></td></tr>`;
+      
+      try {
+        const companies = await apiCall("/companies/");
+        let html = "";
+        companies.forEach(c => {
+          const logo = c.logo_url || `https://api.dicebear.com/7.x/initials/svg?seed=${c.name}`;
+          html += `
+            <tr>
+              <td><img src="${logo}" style="width: 32px; height:32px; object-fit:cover; border-radius: 4px;"></td>
+              <td><b>${c.name}</b></td>
+              <td>${c.industry || 'Technology'}</td>
+              <td><a href="${c.website || '#'}" target="_blank" class="small text-decoration-none">Website</a></td>
+              <td>${c.average_package ? c.average_package + ' LPA' : 'N/A'}</td>
+              <td class="text-end">
+                <input type="file" id="logo_input_${c.id}" class="d-none" accept="image/*" onchange="uploadCompanyLogo(${c.id})">
+                <button class="btn btn-outline-primary btn-sm me-1" onclick="triggerCompanyLogo(${c.id})">Change Logo</button>
+                <a href="/companies.html?id=${c.id}" class="btn btn-outline-secondary btn-sm" target="_blank">View Details</a>
+              </td>
+            </tr>
+          `;
+        });
+        tbody.innerHTML = html;
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger">Failed to fetch companies list.</td></tr>`;
+      }
+    }
+
+    function triggerCompanyLogo(id) {
+      document.getElementById(`logo_input_${id}`).click();
+    }
+
+    async function uploadCompanyLogo(id) {
+      const input = document.getElementById(`logo_input_${id}`);
+      if (input.files.length === 0) return;
+      
+      const formData = new FormData();
+      formData.append("file", input.files[0]);
+      
+      try {
+        await apiCall(`/companies/${id}/logo`, {
+          method: "POST",
+          body: formData
+        });
+        showToast("Company logo updated!", "success");
+        await loadAdminDashboardData();
+      } catch (err) {
+        showToast(err.message, "danger");
+      }
+    }
+
+    async function handleCompanySubmit(e) {
+      e.preventDefault();
+      
+      const payload = {
+        name: document.getElementById("c-name").value,
+        website: document.getElementById("c-web").value,
+        industry: document.getElementById("c-ind").value,
+        description: document.getElementById("c-desc").value
+      };
+      
+      try {
+        await apiCall("/companies/", {
+          method: "POST",
+          body: payload
+        });
+        
+        showToast("Company registered successfully!", "success");
+        bootstrap.Modal.getInstance(document.getElementById("createCompanyModal")).hide();
+        document.getElementById("createCompanyModal").querySelector("form").reset();
+        await loadAdminDashboardData();
+      } catch (err) {
+        showToast(err.message, "danger");
+      }
+    }
+  </script>
+</body>
+</html>

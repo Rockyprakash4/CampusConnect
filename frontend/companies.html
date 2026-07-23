@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusConnect - Companies</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Custom Style -->
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body style="padding-top: 72px;">
+
+  <div id="cc-navbar-container"></div>
+
+  <main class="container py-5 animate-fade-in">
+    
+    <!-- COMPANY LIST VIEW -->
+    <div id="company-list-view">
+      <div class="row align-items-center mb-4">
+        <div class="col-md-6">
+          <h2 class="fw-bold mb-1">Hiring Partners</h2>
+          <p class="text-muted small">Explore recruitment patterns, eligibility criteria, and salaries</p>
+        </div>
+        <div class="col-md-6 text-md-end">
+          <div class="input-group">
+            <span class="input-group-text bg-transparent border-end-0"><i class="bi bi-search text-muted"></i></span>
+            <input type="text" id="company-search" class="form-control border-start-0" placeholder="Search by name, industry, description..." onkeyup="searchCompanies()">
+          </div>
+        </div>
+      </div>
+      
+      <div class="row g-4" id="companies-grid">
+        <!-- Rendered Dynamically -->
+        <div class="col-12 text-center py-5">
+          <div class="spinner-border text-primary" role="status"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPANY DETAILED VIEW -->
+    <div id="company-detail-view" class="d-none">
+      <button class="btn btn-outline-secondary mb-4 btn-sm" onclick="showListView()"><i class="bi bi-arrow-left me-1"></i> Back to Companies</button>
+      
+      <div class="row g-4">
+        <!-- Sidebar stats -->
+        <div class="col-lg-4">
+          <div class="glass-card p-4 text-center">
+            <img src="" id="comp-detail-logo" class="company-logo-img mb-3" style="width:96px; height:96px; object-fit:cover;" alt="Logo">
+            <h3 class="fw-bold mb-1" id="comp-detail-name">-</h3>
+            <p class="text-muted small mb-3" id="comp-detail-industry">-</p>
+            <a href="" id="comp-detail-web" target="_blank" class="btn btn-outline-premium btn-sm w-100 mb-4"><i class="bi bi-globe me-2"></i> Visit Website</a>
+            
+            <div class="text-start border-top pt-3">
+              <h6 class="fw-bold mb-3">Placement Overview</h6>
+              <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted small">Average Salary:</span>
+                <span class="fw-bold text-primary" id="comp-detail-avg">-</span>
+              </div>
+              <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted small">Highest Salary:</span>
+                <span class="fw-bold text-success" id="comp-detail-high">-</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Main Details -->
+        <div class="col-lg-8">
+          <div class="premium-card p-4 mb-4">
+            <h5 class="fw-bold mb-3 border-bottom pb-2">About the Company</h5>
+            <p class="text-secondary small" id="comp-detail-desc">-</p>
+          </div>
+
+          <div class="premium-card p-4 mb-4">
+            <h5 class="fw-bold mb-3 border-bottom pb-2">Eligibility & Selection Process</h5>
+            <div class="mb-3">
+              <h6 class="fw-semibold text-primary mb-1">Academic Criteria</h6>
+              <p class="text-muted small" id="comp-detail-eligibility">-</p>
+            </div>
+            <div class="mb-3">
+              <h6 class="fw-semibold text-primary mb-1">Selection Rounds</h6>
+              <p class="text-muted small" id="comp-detail-process">-</p>
+            </div>
+            <div>
+              <h6 class="fw-semibold text-primary mb-1">Hiring Pattern</h6>
+              <p class="text-muted small" id="comp-detail-pattern">-</p>
+            </div>
+          </div>
+
+          <!-- Company FAQs -->
+          <div class="premium-card p-4 mb-4">
+            <h5 class="fw-bold mb-3 border-bottom pb-2">Frequently Asked Questions</h5>
+            <div id="comp-detail-faq-container">
+              <!-- FAQs Rendered here -->
+            </div>
+          </div>
+
+          <!-- Tabs for Experiences & Questions -->
+          <ul class="nav nav-tabs mb-3" id="companyTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="comp-exp-tab" data-bs-toggle="tab" data-bs-target="#comp-exp-pane" type="button" role="tab"><i class="bi bi-chat-left-quote me-2"></i>Interview Experiences</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="comp-q-tab" data-bs-toggle="tab" data-bs-target="#comp-q-pane" type="button" role="tab"><i class="bi bi-question-circle me-2"></i>Interview Questions</button>
+            </li>
+          </ul>
+          
+          <div class="tab-content">
+            <div class="tab-pane fade show active" id="comp-exp-pane" role="tabpanel">
+              <div class="d-flex flex-column gap-3" id="comp-detail-experiences">
+                <!-- Rendered dynamically -->
+              </div>
+            </div>
+            <div class="tab-pane fade" id="comp-q-pane" role="tabpanel">
+              <div class="row g-3" id="comp-detail-questions">
+                <!-- Rendered dynamically -->
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <div id="cc-footer-container"></div>
+
+  <!-- BootStrap & Custom JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/app.js"></script>
+  <script>
+    let allCompanies = [];
+    
+    document.addEventListener("DOMContentLoaded", async () => {
+      const params = new URLSearchParams(window.location.search);
+      const companyId = params.get("id");
+      
+      if (companyId) {
+        await loadCompanyDetails(companyId);
+      } else {
+        await loadCompaniesList();
+      }
+    });
+
+    async function loadCompaniesList() {
+      const grid = document.getElementById("companies-grid");
+      try {
+        allCompanies = await apiCall("/companies/");
+        renderCompaniesGrid(allCompanies);
+      } catch (err) {
+        grid.innerHTML = `<div class="col-12 text-center text-danger py-5">Failed to load companies database.</div>`;
+      }
+    }
+
+    function renderCompaniesGrid(list) {
+      const grid = document.getElementById("companies-grid");
+      if (list.length === 0) {
+        grid.innerHTML = `<div class="col-12 text-center text-muted py-5">No companies found matching search criteria.</div>`;
+        return;
+      }
+      
+      let html = "";
+      list.forEach(c => {
+        const logo = c.logo_url || `https://api.dicebear.com/7.x/initials/svg?seed=${c.name}`;
+        html += `
+          <div class="col-md-4 col-sm-6">
+            <div class="premium-card p-4 text-center">
+              <img src="${logo}" class="company-logo-img mb-3" style="width: 64px; height: 64px;" alt="${c.name}">
+              <h5 class="fw-bold mb-1">${c.name}</h5>
+              <p class="text-muted small mb-3">${c.industry || 'Technology'}</p>
+              
+              <div class="row border-top pt-3 g-0">
+                <div class="col-6 border-end text-start ps-2">
+                  <small class="text-muted d-block" style="font-size:0.75rem;">Avg Package</small>
+                  <span class="fw-bold text-primary">${c.average_package ? c.average_package + ' LPA' : 'N/A'}</span>
+                </div>
+                <div class="col-6 text-end pe-2">
+                  <small class="text-muted d-block" style="font-size:0.75rem;">Max Package</small>
+                  <span class="fw-bold text-success">${c.highest_package ? c.highest_package + ' LPA' : 'N/A'}</span>
+                </div>
+              </div>
+              
+              <a href="/companies.html?id=${c.id}" class="btn btn-premium btn-sm w-100 mt-4">View Profile</a>
+            </div>
+          </div>
+        `;
+      });
+      grid.innerHTML = html;
+    }
+
+    function searchCompanies() {
+      const q = document.getElementById("company-search").value.toLowerCase();
+      const filtered = allCompanies.filter(c => 
+        c.name.toLowerCase().includes(q) || 
+        (c.industry && c.industry.toLowerCase().includes(q)) ||
+        (c.description && c.description.toLowerCase().includes(q))
+      );
+      renderCompaniesGrid(filtered);
+    }
+
+    function showListView() {
+      window.history.pushState({}, "", "/companies.html");
+      document.getElementById("company-detail-view").classList.add("d-none");
+      document.getElementById("company-list-view").classList.remove("d-none");
+      loadCompaniesList();
+    }
+
+    async function loadCompanyDetails(id) {
+      document.getElementById("company-list-view").classList.add("d-none");
+      const detailView = document.getElementById("company-detail-view");
+      detailView.classList.remove("d-none");
+      
+      try {
+        const c = await apiCall(`/companies/${id}`);
+        
+        document.getElementById("comp-detail-logo").src = c.logo_url || `https://api.dicebear.com/7.x/initials/svg?seed=${c.name}`;
+        document.getElementById("comp-detail-name").innerText = c.name;
+        document.getElementById("comp-detail-industry").innerText = c.industry || "Technology";
+        document.getElementById("comp-detail-web").href = c.website || "#";
+        document.getElementById("comp-detail-avg").innerText = c.average_package ? `${c.average_package} LPA` : "N/A";
+        document.getElementById("comp-detail-high").innerText = c.highest_package ? `${c.highest_package} LPA` : "N/A";
+        document.getElementById("comp-detail-desc").innerText = c.description || "No description provided.";
+        document.getElementById("comp-detail-eligibility").innerText = c.eligibility || "CGPA >= 6.0, No active backlogs";
+        document.getElementById("comp-detail-process").innerText = c.selection_process || "Online Assessment followed by 2-3 Technical Interviews.";
+        document.getElementById("comp-detail-pattern").innerText = c.hiring_pattern || "Focuses heavily on Data Structures, OOP, SQL, and core CS fundamentals.";
+        
+        // Parse FAQs
+        const faqBox = document.getElementById("comp-detail-faq-container");
+        if (c.faq) {
+          try {
+            const faqs = JSON.parse(c.faq);
+            let faqHtml = "";
+            faqs.forEach((f, idx) => {
+              faqHtml += `
+                <div class="mb-3">
+                  <h6 class="fw-bold text-dark mb-1">Q: ${f.question}</h6>
+                  <p class="text-secondary small mb-0">A: ${f.answer}</p>
+                </div>
+              `;
+            });
+            faqBox.innerHTML = faqHtml;
+          } catch (e) {
+            faqBox.innerHTML = `<p class="text-secondary small">${c.faq}</p>`;
+          }
+        } else {
+          faqBox.innerHTML = `<p class="text-muted small">No FAQs added yet.</p>`;
+        }
+        
+        // Load Company experiences
+        await loadCompanyExperiences(id);
+        // Load Company questions
+        await loadCompanyQuestions(id);
+        
+      } catch (err) {
+        detailView.innerHTML = `<div class="alert alert-danger">Failed to load company details. Error: ${err.message}</div>`;
+      }
+    }
+
+    async function loadCompanyExperiences(companyId) {
+      const container = document.getElementById("comp-detail-experiences");
+      container.innerHTML = `<div class="text-center py-4"><div class="spinner-border text-primary" role="status"></div></div>`;
+      
+      try {
+        const data = await apiCall(`/companies/${companyId}/experiences`);
+        if (data.length === 0) {
+          container.innerHTML = `<div class="text-muted small text-center py-4">No placement experiences shared for this company yet.</div>`;
+          return;
+        }
+        
+        let html = "";
+        data.forEach(exp => {
+          html += `
+            <div class="glass-card p-3 d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="fw-bold mb-1">${exp.job_role} (${exp.job_type})</h6>
+                <p class="text-muted small mb-0">Shared by <b>${exp.author.username}</b> on ${new Date(exp.created_at).toLocaleDateString()}</p>
+              </div>
+              <div class="text-end">
+                <span class="badge bg-success-subtle text-success me-2">${exp.result}</span>
+                <a href="/experience.html?id=${exp.id}" class="btn btn-outline-premium btn-sm">Read Report</a>
+              </div>
+            </div>
+          `;
+        });
+        container.innerHTML = html;
+      } catch (err) {
+        container.innerHTML = `<div class="text-danger small">Failed to load experiences.</div>`;
+      }
+    }
+
+    async function loadCompanyQuestions(companyId) {
+      const container = document.getElementById("comp-detail-questions");
+      container.innerHTML = `<div class="text-center py-4"><div class="spinner-border text-primary" role="status"></div></div>`;
+      
+      try {
+        const data = await apiCall(`/companies/${companyId}/questions`);
+        if (data.length === 0) {
+          container.innerHTML = `<div class="text-muted small text-center py-4">No questions logged for this company yet.</div>`;
+          return;
+        }
+        
+        let html = "";
+        data.forEach(q => {
+          html += `
+            <div class="col-md-6">
+              <div class="premium-card p-3">
+                <span class="badge bg-primary-subtle text-primary mb-2">${q.category}</span>
+                <p class="fw-semibold small mb-1">Q: ${q.question_text}</p>
+                <a href="/questions.html?id=${q.id}" class="text-decoration-none small">View Answers (${q.comments_count})</a>
+              </div>
+            </div>
+          `;
+        });
+        container.innerHTML = html;
+      } catch (err) {
+        container.innerHTML = `<div class="text-danger small">Failed to load interview questions.</div>`;
+      }
+    }
+  </script>
+</body>
+</html>

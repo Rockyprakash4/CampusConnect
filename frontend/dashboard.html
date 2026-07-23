@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusConnect - Dashboard</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Custom Style -->
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body style="padding-top: 72px;">
+
+  <div id="cc-navbar-container"></div>
+
+  <div class="container-fluid">
+    <div class="row">
+      
+      <!-- SIDEBAR -->
+      <aside class="col-lg-3 sidebar-cc p-4">
+        
+        <!-- Profile Widget -->
+        <div class="glass-card p-4 text-center mb-4">
+          <img src="" id="side-avatar" class="profile-avatar-img mb-3" style="width: 80px; height: 80px;" alt="Avatar">
+          <h5 class="fw-bold mb-1" id="side-name">Loading...</h5>
+          <span class="badge bg-secondary mb-3" id="side-role">-</span>
+          
+          <div class="text-start border-top pt-3 small text-muted">
+            <p class="mb-1"><i class="bi bi-mortarboard me-2"></i><span id="side-dept">-</span></p>
+            <p class="mb-1"><i class="bi bi-briefcase me-2"></i>Status: <span id="side-status" class="fw-bold text-primary">-</span></p>
+            <p class="mb-0" id="side-company-block" class="d-none"><i class="bi bi-building me-2"></i>Placed: <span id="side-company" class="fw-bold text-success">-</span></p>
+          </div>
+          
+          <a href="/profile.html" class="btn btn-outline-premium btn-sm w-100 mt-3">View Full Profile</a>
+        </div>
+
+        <!-- Filter Widget -->
+        <div class="premium-card p-4">
+          <h6 class="fw-bold mb-3"><i class="bi bi-funnel me-2"></i>Filter Placement Feed</h6>
+          <form id="filter-form" onsubmit="applyFilters(event)">
+            <div class="mb-3">
+              <label for="filter-company" class="form-label small fw-semibold">Company</label>
+              <select id="filter-company" class="form-select form-select-sm">
+                <option value="">All Companies</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="filter-role" class="form-label small fw-semibold">Job Role</label>
+              <input type="text" id="filter-role" class="form-control form-control-sm" placeholder="e.g. SDE, Analyst">
+            </div>
+            <div class="mb-3">
+              <label for="filter-ctc" class="form-label small fw-semibold">Min Package (LPA)</label>
+              <input type="number" id="filter-ctc" class="form-control form-control-sm" placeholder="e.g. 8">
+            </div>
+            <div class="mb-3">
+              <label for="filter-difficulty" class="form-label small fw-semibold">Difficulty</label>
+              <select id="filter-difficulty" class="form-select form-select-sm">
+                <option value="">All Difficulties</option>
+                <option value="Easy">Easy</option>
+                <option value="Medium">Medium</option>
+                <option value="Hard">Hard</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="filter-result" class="form-label small fw-semibold">Interview Result</label>
+              <select id="filter-result" class="form-select form-select-sm">
+                <option value="">All</option>
+                <option value="Selected">Selected</option>
+                <option value="Rejected">Rejected</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-premium btn-sm w-100 mt-2">Apply Filters</button>
+            <button type="button" class="btn btn-outline-secondary btn-sm w-100 mt-1" onclick="clearFilters()">Clear</button>
+          </form>
+        </div>
+
+      </aside>
+
+      <!-- MAIN CONTENT -->
+      <main class="col-lg-9 p-4 animate-fade-in">
+        
+        <!-- Dashboard Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <h2 class="fw-bold mb-1">Student Prep Dashboard</h2>
+            <p class="text-muted small mb-0">Track analytics, access resources, and discover interview experiences</p>
+          </div>
+          <div class="d-flex gap-2">
+            <a href="/add_experience.html" class="btn btn-premium d-none" id="btn-share-exp"><i class="bi bi-plus-circle me-2"></i>Share Experience</a>
+            <button type="button" class="btn btn-outline-premium" data-bs-toggle="modal" data-bs-target="#addQuestionModal"><i class="bi bi-question-circle me-2"></i>Ask Question</button>
+          </div>
+        </div>
+
+        <!-- Global Placement statistics ribbon -->
+        <div class="row g-3 mb-4">
+          <div class="col-sm-6 col-lg-3">
+            <div class="stat-card">
+              <div class="d-flex align-items-center justify-content-between">
+                <div>
+                  <small class="text-muted d-block" style="font-size:0.75rem;">Placement Ratio</small>
+                  <h3 class="fw-bold mb-0 text-primary" id="stat-ratio">0%</h3>
+                </div>
+                <div class="bg-primary-subtle text-primary p-3 rounded-circle"><i class="bi bi-percent fs-5"></i></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-3">
+            <div class="stat-card">
+              <div class="d-flex align-items-center justify-content-between">
+                <div>
+                  <small class="text-muted d-block" style="font-size:0.75rem;">Average CTC</small>
+                  <h3 class="fw-bold mb-0 text-success" id="stat-avg-ctc">0 LPA</h3>
+                </div>
+                <div class="bg-success-subtle text-success p-3 rounded-circle"><i class="bi bi-cash-stack fs-5"></i></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-3">
+            <div class="stat-card">
+              <div class="d-flex align-items-center justify-content-between">
+                <div>
+                  <small class="text-muted d-block" style="font-size:0.75rem;">Hiring Companies</small>
+                  <h3 class="fw-bold mb-0 text-warning" id="stat-companies">0</h3>
+                </div>
+                <div class="bg-warning-subtle text-warning p-3 rounded-circle"><i class="bi bi-building fs-5"></i></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-3">
+            <div class="stat-card">
+              <div class="d-flex align-items-center justify-content-between">
+                <div>
+                  <small class="text-muted d-block" style="font-size:0.75rem;">Experiences Shared</small>
+                  <h3 class="fw-bold mb-0 text-info" id="stat-experiences">0</h3>
+                </div>
+                <div class="bg-info-subtle text-info p-3 rounded-circle"><i class="bi bi-chat-right-quote fs-5"></i></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabs Navigation -->
+        <ul class="nav nav-pills mb-4 gap-2 border-bottom pb-2" id="dashboardTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="feed-tab" data-bs-toggle="pill" data-bs-target="#feed-pane" type="button" role="tab" aria-controls="feed-pane" aria-selected="true"><i class="bi bi-rss me-2"></i>Placements Feed</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="questions-tab" data-bs-toggle="pill" data-bs-target="#questions-pane" type="button" role="tab" aria-controls="questions-pane" aria-selected="false"><i class="bi bi-question-circle me-2"></i>Interview Questions</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="roadmaps-tab" data-bs-toggle="pill" data-bs-target="#roadmaps-pane" type="button" role="tab" aria-controls="roadmaps-pane" aria-selected="false"><i class="bi bi-map me-2"></i>Popular Roadmaps</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="charts-tab" data-bs-toggle="pill" data-bs-target="#charts-pane" type="button" role="tab" aria-controls="charts-pane" aria-selected="false"><i class="bi bi-bar-chart-line me-2"></i>Placement Analytics</button>
+          </li>
+        </ul>
+
+        <!-- Tabs Content -->
+        <div class="tab-content" id="dashboardTabsContent">
+          
+          <!-- TAB 1: PLACEMENT FEED -->
+          <div class="tab-pane fade show active" id="feed-pane" role="tabpanel" aria-labelledby="feed-tab">
+            <div id="feed-items-container" class="d-flex flex-column gap-4">
+              <!-- Rendered Dynamically -->
+            </div>
+          </div>
+          
+          <!-- TAB 2: QUESTIONS -->
+          <div class="tab-pane fade" id="questions-pane" role="tabpanel" aria-labelledby="questions-tab">
+            <div id="questions-items-container" class="row g-4">
+              <!-- Rendered Dynamically -->
+            </div>
+          </div>
+          
+          <!-- TAB 3: ROADMAPS -->
+          <div class="tab-pane fade" id="roadmaps-pane" role="tabpanel" aria-labelledby="roadmaps-tab">
+            <div id="roadmaps-items-container" class="row g-4">
+              <!-- Rendered Dynamically -->
+            </div>
+          </div>
+
+          <!-- TAB 4: ANALYTICS GRAPH -->
+          <div class="tab-pane fade" id="charts-pane" role="tabpanel" aria-labelledby="charts-tab">
+            <div class="row g-4">
+              <div class="col-md-6">
+                <div class="premium-card p-4">
+                  <h6 class="fw-bold mb-3">Top Hiring Companies (Count of Selected Students)</h6>
+                  <canvas id="hiresCountChart" style="max-height: 280px;"></canvas>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="premium-card p-4">
+                  <h6 class="fw-bold mb-3">CTC Package Comparison per Company (LPA)</h6>
+                  <canvas id="packageCompareChart" style="max-height: 280px;"></canvas>
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="premium-card p-4">
+                  <h6 class="fw-bold mb-3">Department Placements Ratio</h6>
+                  <canvas id="deptPlacementChart" style="max-height: 300px;"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </main>
+      
+    </div>
+  </div>
+
+  <!-- ADD QUESTION MODAL -->
+  <div class="modal fade" id="addQuestionModal" tabindex="-1" aria-labelledby="addQuestionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content glass-card border-0 p-3">
+        <div class="modal-header border-0">
+          <h5 class="modal-title fw-bold" id="addQuestionModalLabel">Ask Interview Question</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form onsubmit="handleQuestionSubmit(event)">
+          <div class="modal-body border-0 d-flex flex-column gap-3">
+            <div>
+              <label for="q-company" class="form-label small fw-semibold">Company Name</label>
+              <input type="text" id="q-company" class="form-control" placeholder="e.g. Google, Microsoft" required>
+            </div>
+            <div>
+              <label for="q-role" class="form-label small fw-semibold">Job Role</label>
+              <input type="text" id="q-role" class="form-control" placeholder="e.g. Software Engineer" required>
+            </div>
+            <div class="row">
+              <div class="col-6">
+                <label for="q-category" class="form-label small fw-semibold">Category</label>
+                <select id="q-category" class="form-select" required>
+                  <option value="DSA">DSA</option>
+                  <option value="OOPS">OOPS</option>
+                  <option value="DBMS">DBMS</option>
+                  <option value="Operating System">Operating System</option>
+                  <option value="Computer Networks">Computer Networks</option>
+                  <option value="SQL">SQL</option>
+                  <option value="Java">Java</option>
+                  <option value="Python">Python</option>
+                  <option value="JavaScript">JavaScript</option>
+                  <option value="HTML">HTML</option>
+                  <option value="CSS">CSS</option>
+                  <option value="Bootstrap">Bootstrap</option>
+                  <option value="HR">HR</option>
+                  <option value="Aptitude">Aptitude</option>
+                </select>
+              </div>
+              <div class="col-6">
+                <label for="q-difficulty" class="form-label small fw-semibold">Difficulty</label>
+                <select id="q-difficulty" class="form-select" required>
+                  <option value="Easy">Easy</option>
+                  <option value="Medium" selected>Medium</option>
+                  <option value="Hard">Hard</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label for="q-topic" class="form-label small fw-semibold">Topic (Optional)</label>
+              <input type="text" id="q-topic" class="form-control" placeholder="e.g. Graph Traversal, Binary Search">
+            </div>
+            <div>
+              <label for="q-text" class="form-label small fw-semibold">Question</label>
+              <textarea id="q-text" class="form-control" rows="3" placeholder="Enter the interview question..." required></textarea>
+            </div>
+            <div>
+              <label for="q-answer" class="form-label small fw-semibold">Brief Answer or Hints (Optional)</label>
+              <textarea id="q-answer" class="form-control" rows="3" placeholder="Provide answer hints or resources..."></textarea>
+            </div>
+          </div>
+          <div class="modal-footer border-0">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-premium">Submit Question</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="cc-footer-container"></div>
+
+  <!-- BootStrap & Custom JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/app.js"></script>
+  <script>
+    let filterCompanySelect = document.getElementById("filter-company");
+    
+    document.addEventListener("DOMContentLoaded", async () => {
+      if (!isLoggedIn()) {
+        window.location.href = "/login.html";
+        return;
+      }
+      
+      // Load user profiles
+      await loadProfileData();
+      
+      // Parse search params from URL (from Index page redirect)
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("search")) document.getElementById("filter-role").value = params.get("search");
+      if (params.get("role")) document.getElementById("filter-role").value = params.get("role");
+      if (params.get("difficulty")) document.getElementById("filter-difficulty").value = params.get("difficulty");
+      
+      // Fetch feeds & dropdowns
+      await loadCompaniesDropdown();
+      await fetchFeed();
+      await fetchQuestions();
+      await fetchRoadmaps();
+      await loadAnalyticsAndRenderCharts();
+    });
+
+    async function loadProfileData() {
+      try {
+        const u = await apiCall("/users/me");
+        document.getElementById("side-name").innerText = u.username;
+        document.getElementById("side-avatar").src = u.profile_pic_url || `https://api.dicebear.com/7.x/adventurer/svg?seed=${u.username}`;
+        document.getElementById("side-role").innerText = u.role.toUpperCase();
+        document.getElementById("side-dept").innerText = u.department || "No Department set";
+        
+        const statusEl = document.getElementById("side-status");
+        statusEl.innerText = u.placement_status.toUpperCase();
+        if (u.placement_status === "placed") {
+          statusEl.className = "fw-bold text-success";
+          document.getElementById("side-company-block").classList.remove("d-none");
+          document.getElementById("side-company").innerText = `${u.company_name} (${u.ctc} LPA)`;
+        } else {
+          statusEl.className = "fw-bold text-danger";
+          document.getElementById("side-company-block").classList.add("d-none");
+        }
+        
+        // Show share placement experience button if admin or placed student
+        if (u.role === "placed student" || u.role === "admin") {
+          document.getElementById("btn-share-exp").classList.remove("d-none");
+        }
+      } catch (err) {
+        showToast("Failed to fetch profile details.", "danger");
+      }
+    }
+
+    async function loadCompaniesDropdown() {
+      try {
+        const companies = await apiCall("/companies/");
+        companies.forEach(c => {
+          const opt = document.createElement("option");
+          opt.value = c.id;
+          opt.innerText = c.name;
+          filterCompanySelect.appendChild(opt);
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function fetchFeed(filtersStr = "") {
+      const container = document.getElementById("feed-items-container");
+      container.innerHTML = `<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div></div>`;
+      
+      try {
+        const data = await apiCall(`/experiences/${filtersStr}`);
+        if (data.length === 0) {
+          container.innerHTML = `
+            <div class="premium-card p-5 text-center text-muted">
+              <i class="bi bi-chat-left-quote fs-2 mb-3"></i>
+              <h5>No placement experiences match filters</h5>
+              <p class="small">Be the first to share your experience!</p>
+            </div>
+          `;
+          return;
+        }
+        
+        let html = "";
+        data.forEach(exp => {
+          const avatar = exp.author.profile_pic_url || `https://api.dicebear.com/7.x/adventurer/svg?seed=${exp.author.username}`;
+          const diffBadge = exp.difficulty === "Easy" ? "badge-easy" : exp.difficulty === "Medium" ? "badge-medium" : "badge-hard";
+          const tagBadges = exp.tags ? exp.tags.split(",").map(t => `<span class="badge bg-secondary-subtle text-secondary me-1" style="font-size:0.75rem;">#${t.trim()}</span>`).join("") : "";
+          
+          html += `
+            <div class="glass-card p-4">
+              <div class="d-flex justify-content-between align-items-start mb-3">
+                <div class="d-flex align-items-center gap-3">
+                  <img src="${exp.company.logo_url || 'https://api.dicebear.com/7.x/initials/svg?seed=' + exp.company.name}" class="company-logo-img" style="width: 50px; height: 50px;">
+                  <div>
+                    <h5 class="fw-bold mb-1">${exp.company.name} <span class="fs-6 fw-normal text-muted">(${exp.location || 'N/A'})</span></h5>
+                    <p class="mb-0 small text-muted"><b>Role:</b> ${exp.job_role} | <b>Type:</b> ${exp.job_type}</p>
+                  </div>
+                </div>
+                <div class="text-end">
+                  <span class="fs-5 fw-bold text-success d-block">${exp.ctc} LPA</span>
+                  <span class="badge ${diffBadge} badge-difficulty">${exp.difficulty}</span>
+                </div>
+              </div>
+              
+              <p class="text-secondary small mb-3 text-truncate-3" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                ${exp.experience_details}
+              </p>
+              
+              <div class="mb-3">${tagBadges}</div>
+              
+              <div class="border-top pt-3 d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                  <img src="${avatar}" class="rounded-circle" style="width:28px; height:28px; object-fit:cover;">
+                  <span class="small fw-semibold">${exp.author.username}</span>
+                  <span class="small text-muted border-start ps-2">${exp.author.department || ''}</span>
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                  <button class="btn btn-link btn-sm text-decoration-none p-0 text-reset" onclick="toggleLike('experience', ${exp.id}, this)">
+                    <i class="bi bi-heart me-1"></i><span>${exp.likes_count}</span>
+                  </button>
+                  <a href="/experience.html?id=${exp.id}" class="btn btn-premium btn-sm">Read Details</a>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+        container.innerHTML = html;
+      } catch (err) {
+        container.innerHTML = `<div class="text-center py-5 text-danger">Failed to load experiences feed.</div>`;
+      }
+    }
+
+    async function applyFilters(e) {
+      e.preventDefault();
+      const comp = document.getElementById("filter-company").value;
+      const role = document.getElementById("filter-role").value;
+      const ctc = document.getElementById("filter-ctc").value;
+      const diff = document.getElementById("filter-difficulty").value;
+      const res = document.getElementById("filter-result").value;
+      
+      let q = "?";
+      if (comp) q += `company_id=${comp}&`;
+      if (role) q += `role=${encodeURIComponent(role)}&`;
+      if (ctc) q += `min_ctc=${ctc}&`;
+      if (diff) q += `difficulty=${diff}&`;
+      if (res) q += `result=${res}&`;
+      
+      await fetchFeed(q);
+    }
+
+    function clearFilters() {
+      document.getElementById("filter-form").reset();
+      fetchFeed();
+    }
+
+    async function toggleLike(parentType, parentId, btn) {
+      try {
+        const res = await apiCall("/interactions/like", {
+          method: "POST",
+          body: { parent_type: parentType, parent_id: parentId }
+        });
+        const icon = btn.querySelector("i");
+        const countSpan = btn.querySelector("span");
+        countSpan.innerText = res.likes_count;
+        
+        if (res.status === "liked") {
+          icon.className = "bi bi-heart-fill text-danger";
+          showToast("Liked!", "success");
+        } else {
+          icon.className = "bi bi-heart";
+        }
+      } catch (err) {
+        showToast(err.message, "danger");
+      }
+    }
+
+    // -----------------------------------------------------
+    // Interview Questions Tab
+    // -----------------------------------------------------
+    async function fetchQuestions() {
+      const container = document.getElementById("questions-items-container");
+      container.innerHTML = `<div class="col-12 text-center py-5"><div class="spinner-border text-primary" role="status"></div></div>`;
+      try {
+        const questions = await apiCall("/questions/");
+        if (questions.length === 0) {
+          container.innerHTML = `<div class="col-12 text-center py-5 text-muted">No interview questions shared yet.</div>`;
+          return;
+        }
+        
+        let html = "";
+        questions.forEach(q => {
+          const diffClass = q.difficulty === "Easy" ? "badge-easy" : q.difficulty === "Medium" ? "badge-medium" : "badge-hard";
+          html += `
+            <div class="col-md-6">
+              <div class="premium-card p-4 h-100 d-flex flex-column justify-content-between">
+                <div>
+                  <div class="d-flex justify-content-between mb-3 align-items-center">
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1 rounded">${q.category}</span>
+                    <span class="badge ${diffClass} badge-difficulty">${q.difficulty}</span>
+                  </div>
+                  <h6 class="fw-bold mb-2">Q: ${q.question_text}</h6>
+                  <p class="text-secondary small text-truncate-2 mb-3">${q.answer_text || 'No answer provided yet.'}</p>
+                </div>
+                <div class="border-top pt-3 d-flex justify-content-between align-items-center text-muted small">
+                  <span><b>Company:</b> ${q.company.name} (${q.role})</span>
+                  <a href="/questions.html?id=${q.id}" class="text-decoration-none fw-semibold">View Discussion</a>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+        container.innerHTML = html;
+      } catch (err) {
+        container.innerHTML = `<div class="col-12 text-center py-5 text-danger">Failed to load questions.</div>`;
+      }
+    }
+
+    async function handleQuestionSubmit(e) {
+      e.preventDefault();
+      const company_name = document.getElementById("q-company").value;
+      const role = document.getElementById("q-role").value;
+      const category = document.getElementById("q-category").value;
+      const difficulty = document.getElementById("q-difficulty").value;
+      const topic = document.getElementById("q-topic").value;
+      const question_text = document.getElementById("q-text").value;
+      const answer_text = document.getElementById("q-answer").value;
+      
+      try {
+        await apiCall("/questions/", {
+          method: "POST",
+          body: { company_name, role, category, difficulty, topic, question_text, answer_text }
+        });
+        
+        showToast("Question posted successfully!", "success");
+        // Hide modal
+        bootstrap.Modal.getInstance(document.getElementById("addQuestionModal")).hide();
+        document.getElementById("addQuestionModal").querySelector("form").reset();
+        
+        await fetchQuestions();
+      } catch (err) {
+        showToast(err.message, "danger");
+      }
+    }
+
+    // -----------------------------------------------------
+    // Roadmaps Tab
+    // -----------------------------------------------------
+    async function fetchRoadmaps() {
+      const container = document.getElementById("roadmaps-items-container");
+      container.innerHTML = `<div class="col-12 text-center py-5"><div class="spinner-border text-primary" role="status"></div></div>`;
+      try {
+        const roadmaps = await apiCall("/roadmaps/");
+        if (roadmaps.length === 0) {
+          container.innerHTML = `<div class="col-12 text-center py-5 text-muted">No learning roadmaps shared yet.</div>`;
+          return;
+        }
+        
+        let html = "";
+        roadmaps.forEach(r => {
+          html += `
+            <div class="col-md-6 col-lg-4">
+              <div class="glass-card p-4 h-100 d-flex flex-column justify-content-between">
+                <div>
+                  <h5 class="fw-bold mb-2 text-gradient">${r.title}</h5>
+                  <p class="text-muted small mb-1"><b>Target Role:</b> ${r.target_role || 'General'}</p>
+                  <p class="text-muted small mb-3"><b>Target Company:</b> ${r.target_company || 'All'}</p>
+                  <div class="border-top pt-2 mt-2">
+                    <span class="badge bg-secondary-subtle text-secondary mb-1">Duration: ${r.duration || 'N/A'}</span>
+                  </div>
+                </div>
+                <a href="/roadmap.html?id=${r.id}" class="btn btn-outline-premium btn-sm w-100 mt-3">View Roadmap Plan</a>
+              </div>
+            </div>
+          `;
+        });
+        container.innerHTML = html;
+      } catch (err) {
+        container.innerHTML = `<div class="col-12 text-center py-5 text-danger">Failed to load roadmaps.</div>`;
+      }
+    }
+
+    // -----------------------------------------------------
+    // Charts and Analytics Tab
+    // -----------------------------------------------------
+    async function loadAnalyticsAndRenderCharts() {
+      try {
+        const data = await apiCall("/experiences/analytics/public");
+        
+        // Update dashboard statistics ribbon
+        document.getElementById("stat-ratio").innerText = `${data.stats.placement_ratio}%`;
+        document.getElementById("stat-avg-ctc").innerText = `${data.stats.total_experiences > 0 ? (data.stats.placed_students > 0 ? data.packages_overview[0]?.average || 8.5 : 0) : 0} LPA`;
+        document.getElementById("stat-companies").innerText = data.stats.total_companies;
+        document.getElementById("stat-experiences").innerText = data.stats.total_experiences;
+        
+        // 1. Render Hires Count Chart
+        const hiresCtx = document.getElementById("hiresCountChart").getContext("2d");
+        new Chart(hiresCtx, {
+          type: "bar",
+          data: {
+            labels: data.top_hiring.map(h => h.company),
+            datasets: [{
+              label: "Hires count",
+              data: data.top_hiring.map(h => h.count),
+              backgroundColor: ["#6366f1", "#06b6d4", "#10b981", "#f59e0b", "#f43f5e"],
+              borderRadius: 8
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: { legend: { display: false } }
+          }
+        });
+        
+        // 2. Render Packages Comparison Chart
+        const pkgCtx = document.getElementById("packageCompareChart").getContext("2d");
+        new Chart(pkgCtx, {
+          type: "bar",
+          data: {
+            labels: data.packages_overview.map(p => p.company),
+            datasets: [
+              {
+                label: "Average CTC (LPA)",
+                data: data.packages_overview.map(p => p.average),
+                backgroundColor: "#4f46e5"
+              },
+              {
+                label: "Highest CTC (LPA)",
+                data: data.packages_overview.map(p => p.highest),
+                backgroundColor: "#10b981"
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            scales: { y: { beginAtZero: true } }
+          }
+        });
+        
+        // 3. Render Department Wise Placement Chart
+        const deptCtx = document.getElementById("deptPlacementChart").getContext("2d");
+        new Chart(deptCtx, {
+          type: "doughnut",
+          data: {
+            labels: data.department_placements.map(d => d.department),
+            datasets: [{
+              data: data.department_placements.map(d => d.count),
+              backgroundColor: ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"]
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false
+          }
+        });
+
+      } catch (err) {
+        console.error("Failed to load analytics: ", err);
+      }
+    }
+  </script>
+</body>
+</html>

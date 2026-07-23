@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusConnect - Peer-to-Peer Placement Prep Portal</title>
+  <meta name="description" content="Prepare for campus placements with interview experiences, questions, and roadmaps from seniors.">
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Custom Style -->
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body style="padding-top: 72px;">
+
+  <!-- Navbar Injection Container -->
+  <div id="cc-navbar-container"></div>
+
+  <!-- Hero Section -->
+  <header class="hero-cc animate-fade-in">
+    <div class="container py-5">
+      <div class="row align-items-center g-5">
+        <div class="col-lg-6">
+          <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill fw-bold mb-3">Gateway to Your Dream Career</span>
+          <h1 class="display-4 fw-extrabold mb-4" style="line-height: 1.2;">
+            Learn from the <span class="text-gradient">Success</span> and <span class="text-gradient">Strategies</span> of Placed Seniors
+          </h1>
+          <p class="lead text-muted mb-4">
+            CampusConnect is a peer-driven placement preparation portal. Explore real interview questions, coding round strategies, in-depth company insights, and structured learning roadmaps shared by successfully placed seniors.
+          </p>
+          <div class="d-flex flex-wrap gap-3">
+            <a href="/dashboard.html" class="btn btn-premium btn-lg">Explore Dashboard</a>
+            <a href="/experience.html" class="btn btn-outline-premium btn-lg">View Experiences</a>
+          </div>
+        </div>
+        <div class="col-lg-6 text-center">
+          <div class="glass-card p-4 position-relative overflow-hidden mx-auto" style="max-width: 500px;">
+            <div class="position-absolute top-0 start-0 w-100 h-100 bg-primary opacity-5 blur-3xl"></div>
+            <h5 class="fw-bold mb-4 text-start"><i class="bi bi-search me-2 text-gradient"></i>Quick Search Platform</h5>
+            <form onsubmit="handleHeroSearch(event)">
+              <div class="mb-3">
+                <input type="text" id="hero-search-input" class="form-control form-control-lg" placeholder="Search by Company, Role, Skill (e.g. Google, SDE)...">
+              </div>
+              <div class="row g-2">
+                <div class="col-6">
+                  <select id="hero-role-filter" class="form-select">
+                    <option value="">All Roles</option>
+                    <option value="Software Engineer">SDE / SWE</option>
+                    <option value="Data Analyst">Data Analyst</option>
+                    <option value="QA Engineer">QA Engineer</option>
+                  </select>
+                </div>
+                <div class="col-6">
+                  <select id="hero-difficulty-filter" class="form-select">
+                    <option value="">All Difficulty</option>
+                    <option value="Easy">Easy</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Hard">Hard</option>
+                  </select>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-premium w-100 btn-lg mt-4">Find Materials</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Placement Stats Section -->
+  <section class="py-5 bg-white border-top border-bottom" style="border-color: var(--border-color) !important;">
+    <div class="container">
+      <div class="row g-4 text-center">
+        <div class="col-6 col-lg-3">
+          <div class="stat-card">
+            <h2 class="fw-bold text-gradient mb-1">92%</h2>
+            <p class="text-muted mb-0 small">Placement Success</p>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="stat-card">
+            <h2 class="fw-bold text-gradient mb-1">150+</h2>
+            <p class="text-muted mb-0 small">Hiring Companies</p>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="stat-card">
+            <h2 class="fw-bold text-gradient mb-1">500+</h2>
+            <p class="text-muted mb-0 small">Shared Experiences</p>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="stat-card">
+            <h2 class="fw-bold text-gradient mb-1">1200+</h2>
+            <p class="text-muted mb-0 small">Interview Questions</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trending Experiences Section -->
+  <section class="py-5">
+    <div class="container">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h2 class="fw-bold mb-1">Latest Placement Experiences</h2>
+          <p class="text-muted small mb-0">Learn from final round interviews and timeline strategies</p>
+        </div>
+        <a href="/experience.html" class="btn btn-outline-premium btn-sm">View All</a>
+      </div>
+      
+      <div class="row g-4" id="trending-experiences-container">
+        <!-- Rendered dynamically -->
+        <div class="col-12 text-center py-5">
+          <div class="spinner-border text-primary" role="status"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Popular Companies Section -->
+  <section class="py-5 bg-light-gradient">
+    <div class="container">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h2 class="fw-bold mb-1">Popular Hiring Partners</h2>
+          <p class="text-muted small mb-0">Explore recruiters, selection process, and averages packages</p>
+        </div>
+        <a href="/companies.html" class="btn btn-outline-premium btn-sm">Explore Companies</a>
+      </div>
+      
+      <div class="row g-4" id="popular-companies-container">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer Injection Container -->
+  <div id="cc-footer-container"></div>
+
+  <!-- BootStrap & Custom JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      await loadTrendingExperiences();
+      await loadPopularCompanies();
+    });
+
+    function handleHeroSearch(e) {
+      e.preventDefault();
+      const q = document.getElementById("hero-search-input").value;
+      const role = document.getElementById("hero-role-filter").value;
+      const diff = document.getElementById("hero-difficulty-filter").value;
+      
+      let target = "/dashboard.html?";
+      if (q) target += `search=${encodeURIComponent(q)}&`;
+      if (role) target += `role=${encodeURIComponent(role)}&`;
+      if (diff) target += `difficulty=${encodeURIComponent(diff)}&`;
+      window.location.href = target;
+    }
+
+    async function loadTrendingExperiences() {
+      const container = document.getElementById("trending-experiences-container");
+      try {
+        const data = await apiCall("/experiences/?limit=3");
+        if (data.length === 0) {
+          container.innerHTML = `<div class="col-12 text-center text-muted">No placement experiences published yet.</div>`;
+          return;
+        }
+        
+        let html = "";
+        data.slice(0, 3).forEach(exp => {
+          const authorPic = exp.author.profile_pic_url || `https://api.dicebear.com/7.x/adventurer/svg?seed=${exp.author.username}`;
+          const badgeClass = exp.difficulty === "Easy" ? "badge-easy" : exp.difficulty === "Medium" ? "badge-medium" : "badge-hard";
+          
+          html += `
+            <div class="col-md-4">
+              <div class="glass-card h-100 p-4 d-flex flex-column justify-content-between">
+                <div>
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="badge ${badgeClass} badge-difficulty">${exp.difficulty}</span>
+                    <span class="text-success fw-bold">${exp.ctc} LPA</span>
+                  </div>
+                  <h5 class="fw-bold mb-1">${exp.company.name}</h5>
+                  <p class="text-muted small mb-3">${exp.job_role} (${exp.job_type})</p>
+                  <p class="text-secondary small mb-4 text-truncate-3" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                    ${exp.experience_details}
+                  </p>
+                </div>
+                <div class="border-top pt-3 d-flex align-items-center justify-content-between">
+                  <div class="d-flex align-items-center gap-2">
+                    <img src="${authorPic}" class="rounded-circle" style="width:30px; height:30px; object-fit:cover;">
+                    <span class="small fw-semibold text-muted">${exp.author.username}</span>
+                  </div>
+                  <a href="/experience.html?id=${exp.id}" class="btn btn-link btn-sm text-decoration-none p-0">Read More <i class="bi bi-arrow-right"></i></a>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+        container.innerHTML = html;
+      } catch (err) {
+        container.innerHTML = `<div class="col-12 text-center text-danger">Failed to load experiences.</div>`;
+      }
+    }
+
+    async function loadPopularCompanies() {
+      const container = document.getElementById("popular-companies-container");
+      try {
+        const data = await apiCall("/companies/");
+        if (data.length === 0) {
+          container.innerHTML = `<div class="col-12 text-center text-muted">No company details loaded yet.</div>`;
+          return;
+        }
+        
+        let html = "";
+        data.slice(0, 4).forEach(comp => {
+          const logo = comp.logo_url || `https://api.dicebear.com/7.x/initials/svg?seed=${comp.name}`;
+          html += `
+            <div class="col-md-3 col-sm-6">
+              <div class="premium-card p-4 text-center">
+                <img src="${logo}" class="company-logo-img mb-3" alt="${comp.name}">
+                <h5 class="fw-bold mb-1">${comp.name}</h5>
+                <p class="text-muted small mb-2">${comp.industry || "Technology"}</p>
+                <div class="d-flex justify-content-center gap-3 border-top pt-3 mt-3">
+                  <div>
+                    <small class="text-muted d-block" style="font-size:0.75rem;">Avg Package</small>
+                    <span class="fw-bold text-primary">${comp.average_package || 'N/A'} LPA</span>
+                  </div>
+                  <div class="border-start ps-3">
+                    <small class="text-muted d-block" style="font-size:0.75rem;">Max Package</small>
+                    <span class="fw-bold text-success">${comp.highest_package || 'N/A'} LPA</span>
+                  </div>
+                </div>
+                <a href="/companies.html?id=${comp.id}" class="btn btn-outline-premium w-100 btn-sm mt-3">View Profile</a>
+              </div>
+            </div>
+          `;
+        });
+        container.innerHTML = html;
+      } catch (err) {
+        container.innerHTML = `<div class="col-12 text-center text-danger">Failed to load companies.</div>`;
+      }
+    }
+  </script>
+</body>
+</html>

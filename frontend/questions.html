@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusConnect - Interview Questions</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Custom Style -->
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body style="padding-top: 72px;">
+
+  <div id="cc-navbar-container"></div>
+
+  <main class="container py-5 animate-fade-in">
+    
+    <div class="row g-4">
+      
+      <!-- LEFT PANEL: FILTERS & CATEGORIES -->
+      <div class="col-lg-3">
+        <div class="glass-card p-4 mb-4">
+          <h6 class="fw-bold mb-3"><i class="bi bi-tag me-2 text-gradient"></i>Categories</h6>
+          <div class="d-flex flex-column gap-2" id="categories-list">
+            <button class="btn btn-sm btn-outline-premium text-start active" onclick="filterCategory(this, '')">All Topics</button>
+            <button class="btn btn-sm btn-outline-premium text-start" onclick="filterCategory(this, 'DSA')">Data Structures (DSA)</button>
+            <button class="btn btn-sm btn-outline-premium text-start" onclick="filterCategory(this, 'SQL')">SQL & Database</button>
+            <button class="btn btn-sm btn-outline-premium text-start" onclick="filterCategory(this, 'OOPS')">OOPS Paradigm</button>
+            <button class="btn btn-sm btn-outline-premium text-start" onclick="filterCategory(this, 'Operating System')">Operating System</button>
+            <button class="btn btn-sm btn-outline-premium text-start" onclick="filterCategory(this, 'Computer Networks')">Computer Networks</button>
+            <button class="btn btn-sm btn-outline-premium text-start" onclick="filterCategory(this, 'Java')">Java Platform</button>
+            <button class="btn btn-sm btn-outline-premium text-start" onclick="filterCategory(this, 'Python')">Python Platform</button>
+            <button class="btn btn-sm btn-outline-premium text-start" onclick="filterCategory(this, 'JavaScript')">JavaScript</button>
+            <button class="btn btn-sm btn-outline-premium text-start" onclick="filterCategory(this, 'HR')">HR & Leadership</button>
+            <button class="btn btn-sm btn-outline-premium text-start" onclick="filterCategory(this, 'Aptitude')">Aptitude & Puzzles</button>
+          </div>
+        </div>
+
+        <div class="premium-card p-4">
+          <h6 class="fw-bold mb-3"><i class="bi bi-funnel me-2"></i>Difficulty</h6>
+          <select id="diff-filter" class="form-select form-select-sm" onchange="applyFilters()">
+            <option value="">All Difficulties</option>
+            <option value="Easy">Easy</option>
+            <option value="Medium">Medium</option>
+            <option value="Hard">Hard</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- RIGHT PANEL: QUESTIONS STREAM / DETAIL VIEW -->
+      <div class="col-lg-9">
+        
+        <!-- Isolation detailed view -->
+        <div id="single-question-detail" class="d-none mb-4">
+          <button class="btn btn-outline-secondary btn-sm mb-3" onclick="closeSingleQuestion()"><i class="bi bi-arrow-left me-1"></i> Back to All Questions</button>
+          <div class="glass-card p-4" id="single-q-box">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
+        <!-- General Stream view -->
+        <div id="questions-stream-container">
+          <div class="row align-items-center mb-4 g-2">
+            <div class="col-sm-8">
+              <h2 class="fw-bold mb-1">Interview Questions</h2>
+              <p class="text-muted small mb-0">Browse and solve questions asked during real technical drives</p>
+            </div>
+            <div class="col-sm-4 text-sm-end">
+              <div class="input-group input-group-sm">
+                <span class="input-group-text bg-transparent border-end-0"><i class="bi bi-search text-muted"></i></span>
+                <input type="text" id="q-search" class="form-control border-start-0" placeholder="Search questions..." onkeyup="applyFilters()">
+              </div>
+            </div>
+          </div>
+          
+          <div class="d-flex flex-column gap-4" id="questions-feed">
+            <!-- Loaded dynamically -->
+            <div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div></div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <div id="cc-footer-container"></div>
+
+  <!-- BootStrap & Custom JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/app.js"></script>
+  <script>
+    let activeCategory = "";
+    let activeQuestionId = null;
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      const params = new URLSearchParams(window.location.search);
+      const qId = params.get("id");
+      
+      if (qId) {
+        activeQuestionId = qId;
+        await loadSingleQuestionDetails(qId);
+      } else {
+        await loadQuestionsFeed();
+      }
+    });
+
+    async function loadQuestionsFeed(filterStr = "") {
+      const feed = document.getElementById("questions-feed");
+      try {
+        const data = await apiCall(`/questions/${filterStr}`);
+        if (data.length === 0) {
+          feed.innerHTML = `
+            <div class="premium-card p-5 text-center text-muted">
+              <i class="bi bi-question-circle fs-2 mb-3"></i>
+              <h5>No interview questions found</h5>
+              <p class="small">Try adjusting filters or categories</p>
+            </div>
+          `;
+          return;
+        }
+        
+        let html = "";
+        data.forEach(q => {
+          const diffBadge = q.difficulty === "Easy" ? "badge-easy" : q.difficulty === "Medium" ? "badge-medium" : "badge-hard";
+          html += `
+            <div class="glass-card p-4">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1 rounded">${q.category}</span>
+                <span class="badge ${diffBadge} badge-difficulty">${q.difficulty}</span>
+              </div>
+              <h5 class="fw-bold mb-2">Q: ${q.question_text}</h5>
+              <p class="text-secondary small text-truncate-3">${q.answer_text || 'No answer posted yet.'}</p>
+              
+              <div class="border-top pt-3 mt-3 d-flex justify-content-between align-items-center small text-muted">
+                <span><b>Company:</b> ${q.company.name} | <b>Role:</b> ${q.role}</span>
+                <div class="d-flex gap-3">
+                  <button class="btn btn-link btn-sm text-decoration-none p-0 text-reset" onclick="toggleLike('question', ${q.id}, this)">
+                    <i class="bi bi-heart me-1"></i><span>${q.likes_count}</span>
+                  </button>
+                  <a href="/questions.html?id=${q.id}" class="fw-semibold text-decoration-none">Discuss (${q.comments_count})</a>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+        feed.innerHTML = html;
+      } catch (err) {
+        feed.innerHTML = `<div class="alert alert-danger">Failed to load questions feed.</div>`;
+      }
+    }
+
+    function filterCategory(btn, cat) {
+      document.querySelectorAll("#categories-list button").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      activeCategory = cat;
+      applyFilters();
+    }
+
+    async function applyFilters() {
+      const searchVal = document.getElementById("q-search").value;
+      const diffVal = document.getElementById("diff-filter").value;
+      
+      let q = "?";
+      if (activeCategory) q += `category=${activeCategory}&`;
+      if (diffVal) q += `difficulty=${diffVal}&`;
+      if (searchVal) q += `search=${encodeURIComponent(searchVal)}&`;
+      
+      await loadQuestionsFeed(q);
+    }
+
+    async function toggleLike(parentType, parentId, btn) {
+      try {
+        const res = await apiCall("/interactions/like", {
+          method: "POST",
+          body: { parent_type: parentType, parent_id: parentId }
+        });
+        const icon = btn.querySelector("i");
+        const countSpan = btn.querySelector("span");
+        countSpan.innerText = res.likes_count;
+        
+        if (res.status === "liked") {
+          icon.className = "bi bi-heart-fill text-danger";
+          showToast("Liked!", "success");
+        } else {
+          icon.className = "bi bi-heart";
+        }
+      } catch (err) {
+        showToast(err.message, "danger");
+      }
+    }
+
+    async function loadSingleQuestionDetails(id) {
+      document.getElementById("questions-stream-container").classList.add("d-none");
+      const detBox = document.getElementById("single-question-detail");
+      detBox.classList.remove("d-none");
+      
+      const qBox = document.getElementById("single-q-box");
+      qBox.innerHTML = `<div class="text-center py-4"><div class="spinner-border text-primary" role="status"></div></div>`;
+      
+      try {
+        // Fetch questions feed and filter manually or fetch list
+        const questions = await apiCall(`/questions/`);
+        const q = questions.find(x => x.id == id);
+        
+        if (!q) {
+          qBox.innerHTML = `<div class="alert alert-warning">Question not found.</div>`;
+          return;
+        }
+        
+        const diffBadge = q.difficulty === "Easy" ? "badge-easy" : q.difficulty === "Medium" ? "badge-medium" : "badge-hard";
+        const answer = q.answer_text ? q.answer_text.replace(/\n/g, "<br>") : "No explanation added yet.";
+        
+        qBox.innerHTML = `
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1 rounded">${q.category}</span>
+            <span class="badge ${diffBadge} badge-difficulty">${q.difficulty}</span>
+          </div>
+          <h4 class="fw-bold mb-3">Q: ${q.question_text}</h4>
+          
+          <div class="bg-light p-3 rounded mb-4" style="border-radius: var(--border-radius-sm);">
+            <h6 class="fw-bold text-primary mb-2"><i class="bi bi-lightbulb me-2"></i>Answer / Solution Guidelines</h6>
+            <p class="text-secondary small mb-0">${answer}</p>
+          </div>
+          
+          <div class="d-flex justify-content-between align-items-center text-muted small border-bottom pb-3 mb-4">
+            <span>Posted by <b>${q.author.username}</b> in <b>${q.company.name}</b> (${q.role})</span>
+            <button class="btn btn-sm btn-outline-premium" onclick="toggleLike('question', ${q.id}, this)">
+              <i class="bi bi-heart me-1"></i><span>${q.likes_count}</span> Likes
+            </button>
+          </div>
+
+          <!-- Comments/Discussion Area -->
+          <h5 class="fw-bold mb-3">Discussion Threads</h5>
+          <form onsubmit="handleQCommentSubmit(event, ${q.id})" class="mb-4">
+            <div class="mb-3">
+              <textarea id="q-comment-input" class="form-control" rows="3" placeholder="Post a suggestion or alternative solution..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-premium btn-sm">Submit Response</button>
+          </form>
+          <div id="q-comments-list" class="d-flex flex-column gap-3">
+            <!-- Loaded dynamically -->
+          </div>
+        `;
+        
+        await loadQComments(q.id);
+      } catch (err) {
+        qBox.innerHTML = `<div class="alert alert-danger">Error: ${err.message}</div>`;
+      }
+    }
+
+    async function loadQComments(qId) {
+      const container = document.getElementById("q-comments-list");
+      try {
+        const comments = await apiCall(`/interactions/comments/question/${qId}`);
+        if (comments.length === 0) {
+          container.innerHTML = `<p class="text-muted small text-center">No discussion replies yet. Be the first to share an answer!</p>`;
+          return;
+        }
+        
+        let html = "";
+        comments.forEach(c => {
+          const avatar = c.author.profile_pic_url || `https://api.dicebear.com/7.x/adventurer/svg?seed=${c.author.username}`;
+          html += `
+            <div class="p-3 bg-light rounded" style="border-radius: var(--border-radius-sm);">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <div class="d-flex align-items-center gap-2">
+                  <img src="${avatar}" class="rounded-circle" style="width:24px; height:24px; object-fit:cover;">
+                  <span class="small fw-semibold">${c.author.username}</span>
+                  <span class="badge bg-secondary-subtle text-secondary" style="font-size:0.65rem;">${c.author.role}</span>
+                </div>
+                <small class="text-muted" style="font-size:0.75rem;">${new Date(c.created_at).toLocaleDateString()}</small>
+              </div>
+              <p class="text-secondary small mb-0">${c.comment_text}</p>
+            </div>
+          `;
+        });
+        container.innerHTML = html;
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function handleQCommentSubmit(e, qId) {
+      e.preventDefault();
+      const txt = document.getElementById("q-comment-input").value;
+      try {
+        await apiCall("/interactions/comment", {
+          method: "POST",
+          body: {
+            parent_type: "question",
+            parent_id: qId,
+            comment_text: txt
+          }
+        });
+        document.getElementById("q-comment-input").value = "";
+        showToast("Answer/Response submitted!", "success");
+        await loadQComments(qId);
+      } catch (err) {
+        showToast(err.message, "danger");
+      }
+    }
+
+    function closeSingleQuestion() {
+      window.history.pushState({}, "", "/questions.html");
+      document.getElementById("single-question-detail").classList.add("d-none");
+      document.getElementById("questions-stream-container").classList.remove("d-none");
+      loadQuestionsFeed();
+    }
+  </script>
+</body>
+</html>

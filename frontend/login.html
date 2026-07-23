@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusConnect - Login</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Custom Style -->
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body style="padding-top: 72px; min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between;">
+
+  <div id="cc-navbar-container"></div>
+
+  <main class="container py-5 my-auto animate-fade-in">
+    <div class="row justify-content-center">
+      <div class="col-md-5">
+        
+        <!-- LOGIN CARD -->
+        <div class="glass-card p-5" id="login-panel">
+          <div class="text-center mb-4">
+            <i class="bi bi-link-45deg text-gradient fs-1"></i>
+            <h3 class="fw-bold mt-2">Welcome Back</h3>
+            <p class="text-muted">Enter credentials to access your dashboard</p>
+          </div>
+          
+          <form onsubmit="handleLoginSubmit(event)">
+            <div class="mb-3">
+              <label for="login-email" class="form-label small fw-semibold text-muted">Email or Username</label>
+              <input type="text" id="login-email" class="form-control" placeholder="Enter username or email" required>
+            </div>
+            <div class="mb-3">
+              <div class="d-flex justify-content-between">
+                <label for="login-password" class="form-label small fw-semibold text-muted">Password</label>
+                <a href="#" class="small text-decoration-none" onclick="toggleForgotPasswordPanel(true)">Forgot Password?</a>
+              </div>
+              <div class="input-group">
+                <input type="password" id="login-password" class="form-control" placeholder="Enter password" required>
+                <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('login-password')">
+                  <i class="bi bi-eye-slash" id="login-password-icon"></i>
+                </button>
+              </div>
+            </div>
+            
+            <button type="submit" class="btn btn-premium w-100 btn-lg mt-4">Login</button>
+          </form>
+          
+          <div class="text-center mt-4">
+            <span class="text-muted small">Don't have an account? <a href="/register.html" class="text-decoration-none">Sign Up</a></span>
+          </div>
+        </div>
+
+        <!-- RESET PASSWORD CARD -->
+        <div class="glass-card p-5 d-none" id="reset-panel">
+          <div class="text-center mb-4">
+            <i class="bi bi-shield-key text-gradient fs-1"></i>
+            <h3 class="fw-bold mt-2">Configure Password</h3>
+            <p class="text-muted">Setup a new strong password for your account</p>
+          </div>
+          
+          <form onsubmit="handleResetSubmit(event)">
+            <div class="mb-3">
+              <label for="reset-new-password" class="form-label small fw-semibold text-muted">New Password</label>
+              <input type="password" id="reset-new-password" class="form-control" placeholder="Enter new password" required minlength="6">
+            </div>
+            <div class="mb-3">
+              <label for="reset-confirm-password" class="form-label small fw-semibold text-muted">Confirm Password</label>
+              <input type="password" id="reset-confirm-password" class="form-control" placeholder="Confirm new password" required minlength="6">
+            </div>
+            <button type="submit" class="btn btn-premium w-100 btn-lg mt-4">Update Password</button>
+          </form>
+        </div>
+
+        <!-- FORGOT PASSWORD CARD -->
+        <div class="glass-card p-5 d-none" id="forgot-panel">
+          <div class="text-center mb-4">
+            <i class="bi bi-envelope-at text-gradient fs-1"></i>
+            <h3 class="fw-bold mt-2">Reset Password</h3>
+            <p class="text-muted">Enter registered email to receive verification link</p>
+          </div>
+          
+          <form onsubmit="handleForgotSubmit(event)">
+            <div class="mb-3">
+              <label for="forgot-email" class="form-label small fw-semibold text-muted">Email Address</label>
+              <input type="email" id="forgot-email" class="form-control" placeholder="name@college.edu" required>
+            </div>
+            
+            <button type="submit" class="btn btn-premium w-100 btn-lg mt-3">Send Reset Link</button>
+            <button type="button" class="btn btn-outline-secondary w-100 btn-lg mt-2" onclick="toggleForgotPasswordPanel(false)">Back to Login</button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <div id="cc-footer-container"></div>
+
+  <!-- BootStrap & Custom JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // Check if URL has reset_token parameter
+      const params = new URLSearchParams(window.location.search);
+      const resetToken = params.get("reset_token");
+      
+      if (resetToken) {
+        document.getElementById("login-panel").classList.add("d-none");
+        document.getElementById("reset-panel").classList.remove("d-none");
+      }
+      
+      if (isLoggedIn()) {
+        window.location.href = "/dashboard.html";
+      }
+    });
+
+    function togglePasswordVisibility(fieldId) {
+      const input = document.getElementById(fieldId);
+      const icon = document.getElementById(fieldId + "-icon");
+      if (input.type === "password") {
+        input.type = "text";
+        icon.className = "bi bi-eye";
+      } else {
+        input.type = "password";
+        icon.className = "bi bi-eye-slash";
+      }
+    }
+
+    function toggleForgotPasswordPanel(show) {
+      if (show) {
+        document.getElementById("login-panel").classList.add("d-none");
+        document.getElementById("forgot-panel").classList.remove("d-none");
+      } else {
+        document.getElementById("forgot-panel").classList.add("d-none");
+        document.getElementById("login-panel").classList.remove("d-none");
+      }
+    }
+
+    async function handleLoginSubmit(e) {
+      e.preventDefault();
+      const usernameInput = document.getElementById("login-email").value;
+      const passwordInput = document.getElementById("login-password").value;
+      
+      // OAuth2PasswordRequestForm expects application/x-www-form-urlencoded
+      const formData = new FormData();
+      formData.append("username", usernameInput);
+      formData.append("password", passwordInput);
+      
+      try {
+        const res = await apiCall("/auth/login", {
+          method: "POST",
+          body: formData
+        });
+        
+        setSession(res.access_token, res.role, res.username);
+        showToast("Login successful!", "success");
+        
+        setTimeout(() => {
+          window.location.href = "/dashboard.html";
+        }, 1000);
+      } catch (err) {
+        showToast(err.message || "Login failed. Check your password or verify email.", "danger");
+      }
+    }
+
+    async function handleForgotSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById("forgot-email").value;
+      try {
+        const res = await apiCall("/auth/forgot-password", {
+          method: "POST",
+          body: { email }
+        });
+        showToast("A reset password link has been sent to your email address.", "success");
+        toggleForgotPasswordPanel(false);
+      } catch (err) {
+        showToast(err.message, "danger");
+      }
+    }
+
+    async function handleResetSubmit(e) {
+      e.preventDefault();
+      const newPass = document.getElementById("reset-new-password").value;
+      const confPass = document.getElementById("reset-confirm-password").value;
+      
+      if (newPass !== confPass) {
+        showToast("Passwords do not match!", "warning");
+        return;
+      }
+      
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get("reset_token");
+      
+      try {
+        await apiCall("/auth/reset-password", {
+          method: "POST",
+          body: { token, new_password: newPass }
+        });
+        
+        showToast("Password updated successfully. Please log in.", "success");
+        setTimeout(() => {
+          window.location.href = "/login.html";
+        }, 1500);
+      } catch (err) {
+        showToast(err.message, "danger");
+      }
+    }
+  </script>
+</body>
+</html>

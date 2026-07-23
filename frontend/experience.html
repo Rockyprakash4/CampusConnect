@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusConnect - Placement Experiences</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Custom Style -->
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body style="padding-top: 72px;">
+
+  <div id="cc-navbar-container"></div>
+
+  <main class="container py-5 animate-fade-in">
+
+    <!-- LIST OF EXPERIENCES -->
+    <div id="experience-list-container">
+      <div class="row align-items-center mb-4">
+        <div class="col-md-6">
+          <h2 class="fw-bold mb-1">Interview Experiences</h2>
+          <p class="text-muted small">Read full preparation strategies and interview processes from seniors</p>
+        </div>
+        <div class="col-md-6 text-md-end">
+          <div class="input-group">
+            <span class="input-group-text bg-transparent border-end-0"><i class="bi bi-search text-muted"></i></span>
+            <input type="text" id="exp-search" class="form-control border-start-0" placeholder="Search experiences (e.g. Amazon, SDE)..." onkeyup="searchExperiences()">
+          </div>
+        </div>
+      </div>
+      <div class="row g-4" id="experience-list-grid">
+        <!-- Loaded dynamically -->
+      </div>
+    </div>
+
+    <!-- EXPERIENCE DETAILS VIEW -->
+    <div id="experience-detail-container" class="d-none">
+      <button class="btn btn-outline-secondary btn-sm mb-4" onclick="showListView()"><i class="bi bi-arrow-left me-1"></i> Back to Experiences</button>
+      
+      <div class="row g-4">
+        <div class="col-lg-8">
+          
+          <!-- Experience Card Header -->
+          <div class="glass-card p-4 mb-4">
+            <div class="d-flex justify-content-between align-items-start mb-3 flex-wrap gap-2">
+              <div class="d-flex align-items-center gap-3">
+                <img src="" id="det-company-logo" class="company-logo-img" style="width:60px; height:60px;">
+                <div>
+                  <h3 class="fw-bold mb-1" id="det-company-name">-</h3>
+                  <p class="text-muted mb-0 small"><b>Role:</b> <span id="det-job-role">-</span> | <b>Type:</b> <span id="det-job-type">-</span></p>
+                </div>
+              </div>
+              <div class="text-end">
+                <span class="fs-4 fw-bold text-success d-block" id="det-ctc">- LPA</span>
+                <span class="badge badge-medium badge-difficulty" id="det-difficulty">-</span>
+              </div>
+            </div>
+            <div class="border-top pt-3 d-flex flex-wrap justify-content-between align-items-center gap-3">
+              <div class="d-flex align-items-center gap-2">
+                <img src="" id="det-author-pic" class="rounded-circle" style="width:36px; height:36px; object-fit:cover;">
+                <div>
+                  <span class="fw-bold small d-block" id="det-author-name">-</span>
+                  <small class="text-muted" id="det-author-dept">-</small>
+                </div>
+              </div>
+              <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-outline-premium" onclick="toggleLike()"><i class="bi bi-heart me-1" id="like-icon"></i><span id="like-count">0</span> Likes</button>
+                <button class="btn btn-sm btn-outline-premium" onclick="toggleBookmark()"><i class="bi bi-bookmark me-1" id="bookmark-icon"></i> Save</button>
+                <button class="btn btn-sm btn-outline-premium" onclick="copyShareLink()"><i class="bi bi-share me-1"></i> Share</button>
+                <button class="btn btn-sm btn-outline-danger" onclick="openReportModal()"><i class="bi bi-flag me-1"></i> Report</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Summary Parameters Grid -->
+          <div class="row g-3 mb-4">
+            <div class="col-6 col-sm-3">
+              <div class="premium-card p-3 text-center">
+                <small class="text-muted d-block" style="font-size:0.75rem;">Hiring Type</small>
+                <span class="fw-bold small" id="det-hiring-type">-</span>
+              </div>
+            </div>
+            <div class="col-6 col-sm-3">
+              <div class="premium-card p-3 text-center">
+                <small class="text-muted d-block" style="font-size:0.75rem;">Result</small>
+                <span class="badge bg-success-subtle text-success" id="det-result">-</span>
+              </div>
+            </div>
+            <div class="col-6 col-sm-3">
+              <div class="premium-card p-3 text-center">
+                <small class="text-muted d-block" style="font-size:0.75rem;">Rounds Count</small>
+                <span class="fw-bold small" id="det-rounds">-</span>
+              </div>
+            </div>
+            <div class="col-6 col-sm-3">
+              <div class="premium-card p-3 text-center">
+                <small class="text-muted d-block" style="font-size:0.75rem;">Drive Date</small>
+                <span class="fw-bold small" id="det-drive-date">-</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- DETAILED SECTIONS (Rendered on Demand) -->
+          <div id="experience-sections-container">
+            <!-- Dynamically populated sections -->
+          </div>
+
+          <!-- Attachment Section -->
+          <div class="premium-card p-4 mb-4 d-none" id="det-attachment-block">
+            <h5 class="fw-bold mb-3 border-bottom pb-2">Resume / Interview Attachments</h5>
+            <div class="d-flex align-items-center justify-content-between p-3 bg-light rounded">
+              <span class="small fw-semibold text-muted"><i class="bi bi-file-earmark-pdf me-2 fs-5"></i>Attached Resource File</span>
+              <a href="" id="det-attachment-link" target="_blank" class="btn btn-premium btn-sm"><i class="bi bi-download me-1"></i> Download File</a>
+            </div>
+          </div>
+
+          <!-- Comments Feed -->
+          <div class="premium-card p-4 mb-4">
+            <h5 class="fw-bold mb-4 border-bottom pb-2">Discussion & Comments (<span id="comments-count">0</span>)</h5>
+            <form onsubmit="handleCommentSubmit(event)" class="mb-4">
+              <div class="mb-3">
+                <textarea id="comment-input" class="form-control" rows="3" placeholder="Add a comment to the discussion..." required></textarea>
+              </div>
+              <button type="submit" class="btn btn-premium btn-sm">Post Comment</button>
+            </form>
+            <div id="comments-list-container" class="d-flex flex-column gap-3">
+              <!-- Dynamically populated comments -->
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Sidebar Tools -->
+        <div class="col-lg-4">
+          <div class="glass-card p-4 text-center mb-4">
+            <i class="bi bi-file-earmark-pdf text-gradient fs-1 mb-2"></i>
+            <h5 class="fw-bold mb-2">Download Offline Copy</h5>
+            <p class="text-muted small mb-4">Get a clean PDF version of this placement experience for offline study.</p>
+            <a href="" id="det-pdf-download" class="btn btn-premium w-100"><i class="bi bi-download me-2"></i> Download as PDF</a>
+          </div>
+
+          <div class="premium-card p-4">
+            <h6 class="fw-bold mb-3">Eligibility Details</h6>
+            <div class="small text-muted mb-3">
+              <p class="mb-1"><b>Eligibility Criteria:</b></p>
+              <p id="det-eligibility">-</p>
+            </div>
+            <div class="small text-muted">
+              <p class="mb-1"><b>Job Location:</b></p>
+              <p id="det-location">-</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- REPORT MODAL -->
+  <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content glass-card border-0 p-3">
+        <div class="modal-header border-0">
+          <h5 class="modal-title fw-bold" id="reportModalLabel">Report Post</h5>
+          <button type="button" class="btn-close" data-bs-toggle="modal" aria-label="Close"></button>
+        </div>
+        <form onsubmit="handleReportSubmit(event)">
+          <div class="modal-body border-0 d-flex flex-column gap-3">
+            <div>
+              <label for="rep-reason" class="form-label small fw-semibold">Reason for Reporting</label>
+              <select id="rep-reason" class="form-select" required>
+                <option value="Inappropriate Content">Inappropriate Content</option>
+                <option value="Spam / Misleading">Spam / Misleading</option>
+                <option value="Plagiarism / Copied">Plagiarism / Copied</option>
+                <option value="Wrong Information">Wrong Information</option>
+              </select>
+            </div>
+            <div>
+              <label for="rep-details" class="form-label small fw-semibold">Additional Details</label>
+              <textarea id="rep-details" class="form-control" rows="3" placeholder="Provide extra detail about this violation..."></textarea>
+            </div>
+          </div>
+          <div class="modal-footer border-0">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-danger">Submit Report</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="cc-footer-container"></div>
+
+  <!-- BootStrap & Custom JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/app.js"></script>
+  <script>
+    let activeExpId = null;
+    let allExperiences = [];
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      const params = new URLSearchParams(window.location.search);
+      const expId = params.get("id");
+      
+      if (expId) {
+        activeExpId = expId;
+        await loadExperienceDetails(expId);
+      } else {
+        await loadExperiencesList();
+      }
+    });
+
+    async function loadExperiencesList() {
+      const grid = document.getElementById("experience-list-grid");
+      grid.innerHTML = `<div class="col-12 text-center py-5"><div class="spinner-border text-primary" role="status"></div></div>`;
+      try {
+        allExperiences = await apiCall("/experiences/");
+        renderExperiencesGrid(allExperiences);
+      } catch (err) {
+        grid.innerHTML = `<div class="col-12 text-center text-danger">Failed to fetch experiences.</div>`;
+      }
+    }
+
+    function renderExperiencesGrid(list) {
+      const grid = document.getElementById("experience-list-grid");
+      if (list.length === 0) {
+        grid.innerHTML = `<div class="col-12 text-center py-5 text-muted">No placement experiences published yet.</div>`;
+        return;
+      }
+      
+      let html = "";
+      list.forEach(exp => {
+        const logo = exp.company.logo_url || `https://api.dicebear.com/7.x/initials/svg?seed=${exp.company.name}`;
+        const diffBadge = exp.difficulty === "Easy" ? "badge-easy" : exp.difficulty === "Medium" ? "badge-medium" : "badge-hard";
+        
+        html += `
+          <div class="col-md-6 col-lg-4">
+            <div class="glass-card p-4 h-100 d-flex flex-column justify-content-between">
+              <div>
+                <div class="d-flex justify-content-between mb-3">
+                  <span class="badge ${diffBadge} badge-difficulty">${exp.difficulty}</span>
+                  <span class="fw-bold text-success">${exp.ctc} LPA</span>
+                </div>
+                <div class="d-flex align-items-center gap-2 mb-3">
+                  <img src="${logo}" class="company-logo-img" style="width:36px; height:36px;">
+                  <h6 class="fw-bold mb-0">${exp.company.name}</h6>
+                </div>
+                <p class="text-muted small mb-2"><b>Role:</b> ${exp.job_role}</p>
+                <p class="text-secondary small text-truncate-3">${exp.experience_details}</p>
+              </div>
+              <a href="/experience.html?id=${exp.id}" class="btn btn-outline-premium w-100 btn-sm mt-3">Read Full Strategy</a>
+            </div>
+          </div>
+        `;
+      });
+      grid.innerHTML = html;
+    }
+
+    function searchExperiences() {
+      const q = document.getElementById("exp-search").value.toLowerCase();
+      const filtered = allExperiences.filter(e => 
+        e.company.name.toLowerCase().includes(q) || 
+        e.job_role.toLowerCase().includes(q) ||
+        (e.tags && e.tags.toLowerCase().includes(q))
+      );
+      renderExperiencesGrid(filtered);
+    }
+
+    function showListView() {
+      window.history.pushState({}, "", "/experience.html");
+      document.getElementById("experience-detail-container").classList.add("d-none");
+      document.getElementById("experience-list-container").classList.remove("d-none");
+      loadExperiencesList();
+    }
+
+    async function loadExperienceDetails(id) {
+      document.getElementById("experience-list-container").classList.add("d-none");
+      const detailsBox = document.getElementById("experience-detail-container");
+      detailsBox.classList.remove("d-none");
+      
+      try {
+        const exp = await apiCall(`/experiences/${id}`);
+        
+        document.getElementById("det-company-logo").src = exp.company.logo_url || `https://api.dicebear.com/7.x/initials/svg?seed=${exp.company.name}`;
+        document.getElementById("det-company-name").innerText = exp.company.name;
+        document.getElementById("det-job-role").innerText = exp.job_role;
+        document.getElementById("det-job-type").innerText = exp.job_type;
+        document.getElementById("det-ctc").innerText = `${exp.ctc} LPA`;
+        document.getElementById("det-difficulty").innerText = exp.difficulty;
+        document.getElementById("det-difficulty").className = `badge badge-difficulty ${exp.difficulty === "Easy" ? "badge-easy" : exp.difficulty === "Medium" ? "badge-medium" : "badge-hard"}`;
+        
+        document.getElementById("det-author-name").innerText = exp.author.username;
+        document.getElementById("det-author-dept").innerText = `${exp.author.department || ''} | Batch: ${exp.author.batch || ''}`;
+        document.getElementById("det-author-pic").src = exp.author.profile_pic_url || `https://api.dicebear.com/7.x/adventurer/svg?seed=${exp.author.username}`;
+        
+        document.getElementById("det-hiring-type").innerText = exp.hiring_type;
+        document.getElementById("det-result").innerText = exp.result;
+        document.getElementById("det-result").className = `badge ${exp.result === "Selected" ? "bg-success-subtle text-success" : "bg-danger-subtle text-danger"}`;
+        document.getElementById("det-rounds").innerText = exp.rounds_count;
+        document.getElementById("det-drive-date").innerText = exp.drive_date || "N/A";
+        
+        document.getElementById("det-eligibility").innerText = exp.eligibility_criteria || "CGPA >= 6.0";
+        document.getElementById("det-location").innerText = exp.location || "N/A";
+        
+        // Setup PDF download links
+        document.getElementById("det-pdf-download").href = `/api/experiences/${exp.id}/pdf`;
+        
+        // Render detailed text blocks
+        const sectionsContainer = document.getElementById("experience-sections-container");
+        sectionsContainer.innerHTML = "";
+        
+        const textSections = [
+          { title: "Experience Details", text: exp.experience_details, icon: "bi-card-text" },
+          { title: "Preparation Strategy", text: exp.prep_strategy, icon: "bi-lightbulb" },
+          { title: "Preparation Timeline", text: exp.prep_timeline, icon: "bi-calendar-range" },
+          { title: "Coding Round Experience", text: exp.coding_round_exp, icon: "bi-code-slash" },
+          { title: "Technical Interview Questions Asked", text: exp.tech_questions, icon: "bi-chat-left-dots" },
+          { title: "SQL Interview Questions", text: exp.sql_questions, icon: "bi-database" },
+          { title: "HR Interview Experience", text: exp.hr_questions, icon: "bi-person-badge" },
+          { title: "Behavioral Questions Asked", text: exp.behavioral_questions, icon: "bi-people" },
+          { title: "System Design Questions", text: exp.system_design_questions, icon: "bi-diagram-3" },
+          { title: "Mistakes Made & Lessons Learned", text: exp.mistakes, icon: "bi-exclamation-triangle" },
+          { title: "Tips for Juniors", text: exp.tips, icon: "bi-check2-circle" },
+          { title: "Resources Used", text: exp.resources_used, icon: "bi-journal-bookmark" },
+          { title: "LeetCode Practice Problems", text: exp.leetcode_solved, icon: "bi-clipboard-check" },
+          { title: "Projects Asked", text: exp.projects_asked, icon: "bi-folder" },
+          { title: "Resume Tips", text: exp.resume_tips, icon: "bi-file-earmark-person" },
+          { title: "Final Suggestions", text: exp.final_suggestions, icon: "bi-info-square" }
+        ];
+        
+        textSections.forEach(s => {
+          if (s.text && s.text.trim()) {
+            const lines = s.text.replace(/\r\n/g, "\n").split("\n").map(l => `<p class="mb-2 text-secondary small">${l}</p>`).join("");
+            const block = `
+              <div class="premium-card p-4 mb-4">
+                <h5 class="fw-bold mb-3 border-bottom pb-2 d-flex align-items-center gap-2">
+                  <i class="bi ${s.icon} text-gradient"></i>
+                  <span>${s.title}</span>
+                </h5>
+                <div>${lines}</div>
+              </div>
+            `;
+            sectionsContainer.insertAdjacentHTML("beforeend", block);
+          }
+        });
+        
+        // Show attachment if exists
+        const attachBlock = document.getElementById("det-attachment-block");
+        if (exp.attachment_url) {
+          attachBlock.classList.remove("d-none");
+          document.getElementById("det-attachment-link").href = exp.attachment_url;
+        } else {
+          attachBlock.classList.add("d-none");
+        }
+        
+        // Load counts
+        document.getElementById("like-count").innerText = exp.likes_count;
+        document.getElementById("comments-count").innerText = exp.comments_count;
+        
+        // Fetch comments list
+        await loadCommentsList(id);
+        
+      } catch (err) {
+        detailsBox.innerHTML = `<div class="alert alert-danger">Failed to load experience details. Error: ${err.message}</div>`;
+      }
+    }
+
+    async function loadCommentsList(expId) {
+      const container = document.getElementById("comments-list-container");
+      try {
+        const comments = await apiCall(`/interactions/comments/experience/${expId}`);
+        document.getElementById("comments-count").innerText = comments.length;
+        
+        if (comments.length === 0) {
+          container.innerHTML = `<p class="text-muted small text-center py-3">No discussion comments yet. Be the first to reply!</p>`;
+          return;
+        }
+        
+        let html = "";
+        comments.forEach(c => {
+          const avatar = c.author.profile_pic_url || `https://api.dicebear.com/7.x/adventurer/svg?seed=${c.author.username}`;
+          html += `
+            <div class="p-3 bg-light rounded" style="border-radius: var(--border-radius-sm);">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <div class="d-flex align-items-center gap-2">
+                  <img src="${avatar}" class="rounded-circle" style="width:24px; height:24px; object-fit:cover;">
+                  <span class="small fw-semibold">${c.author.username}</span>
+                  <span class="badge bg-secondary-subtle text-secondary" style="font-size: 0.65rem;">${c.author.role}</span>
+                </div>
+                <small class="text-muted" style="font-size:0.75rem;">${new Date(c.created_at).toLocaleDateString()}</small>
+              </div>
+              <p class="text-secondary small mb-0">${c.comment_text}</p>
+            </div>
+          `;
+        });
+        container.innerHTML = html;
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function handleCommentSubmit(e) {
+      e.preventDefault();
+      const txt = document.getElementById("comment-input").value;
+      try {
+        await apiCall("/interactions/comment", {
+          method: "POST",
+          body: {
+            parent_type: "experience",
+            parent_id: activeExpId,
+            comment_text: txt
+          }
+        });
+        document.getElementById("comment-input").value = "";
+        showToast("Comment posted!", "success");
+        await loadCommentsList(activeExpId);
+      } catch (err) {
+        showToast(err.message, "danger");
+      }
+    }
+
+    async function toggleLike() {
+      try {
+        const res = await apiCall("/interactions/like", {
+          method: "POST",
+          body: { parent_type: "experience", parent_id: activeExpId }
+        });
+        document.getElementById("like-count").innerText = res.likes_count;
+        const icon = document.getElementById("like-icon");
+        
+        if (res.status === "liked") {
+          icon.className = "bi bi-heart-fill text-danger";
+          showToast("Liked experience!", "success");
+        } else {
+          icon.className = "bi bi-heart";
+        }
+      } catch (err) {
+        showToast(err.message, "danger");
+      }
+    }
+
+    async function toggleBookmark() {
+      try {
+        const res = await apiCall("/interactions/bookmark", {
+          method: "POST",
+          body: { parent_type: "experience", parent_id: activeExpId }
+        });
+        const icon = document.getElementById("bookmark-icon");
+        
+        if (res.status === "bookmarked") {
+          icon.className = "bi bi-bookmark-fill text-primary";
+          showToast("Saved to bookmarks!", "success");
+        } else {
+          icon.className = "bi bi-bookmark";
+          showToast("Removed from bookmarks.", "info");
+        }
+      } catch (err) {
+        showToast(err.message, "danger");
+      }
+    }
+
+    function copyShareLink() {
+      const url = window.location.href;
+      navigator.clipboard.writeText(url).then(() => {
+        showToast("Share link copied to clipboard!", "success");
+      });
+    }
+
+    function openReportModal() {
+      const modal = new bootstrap.Modal(document.getElementById("reportModal"));
+      modal.show();
+    }
+
+    async function handleReportSubmit(e) {
+      e.preventDefault();
+      const reason = document.getElementById("rep-reason").value;
+      const details = document.getElementById("rep-details").value;
+      
+      try {
+        await apiCall("/interactions/report", {
+          method: "POST",
+          body: {
+            parent_type: "experience",
+            parent_id: activeExpId,
+            reason,
+            details
+          }
+        });
+        
+        showToast("Report submitted successfully. Admins will review.", "success");
+        bootstrap.Modal.getInstance(document.getElementById("reportModal")).hide();
+        document.getElementById("reportModal").querySelector("form").reset();
+      } catch (err) {
+        showToast(err.message, "danger");
+      }
+    }
+  </script>
+</body>
+</html>

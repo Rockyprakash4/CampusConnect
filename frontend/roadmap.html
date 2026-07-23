@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusConnect - Preparation Roadmaps</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Custom Style -->
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body style="padding-top: 72px;">
+
+  <div id="cc-navbar-container"></div>
+
+  <main class="container py-5 animate-fade-in">
+    
+    <!-- ROADMAPS LIST VIEW -->
+    <div id="roadmap-list-view">
+      <div class="row align-items-center mb-4">
+        <div class="col-md-6">
+          <h2 class="fw-bold mb-1">Preparation Roadmaps</h2>
+          <p class="text-muted small">Access structured weekly study plans and targeted company sheets</p>
+        </div>
+        <div class="col-md-6 text-md-end">
+          <div class="d-flex gap-2 justify-content-md-end">
+            <input type="text" id="roadmap-search" class="form-control form-control-sm w-50" placeholder="Search roadmaps..." onkeyup="searchRoadmaps()">
+            <button class="btn btn-premium btn-sm" id="btn-create-roadmap" data-bs-toggle="modal" data-bs-target="#createRoadmapModal"><i class="bi bi-plus-circle me-1"></i> Create Roadmap</button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="row g-4" id="roadmaps-grid">
+        <!-- Loaded dynamically -->
+      </div>
+    </div>
+
+    <!-- ROADMAP DETAILED VIEW -->
+    <div id="roadmap-detail-view" class="d-none">
+      <button class="btn btn-outline-secondary btn-sm mb-4" onclick="showListView()"><i class="bi bi-arrow-left me-1"></i> Back to Roadmaps</button>
+      
+      <div class="row g-4">
+        
+        <!-- Sidebar summary stats -->
+        <div class="col-lg-4">
+          <div class="glass-card p-4 mb-4">
+            <h3 class="fw-bold mb-2 text-gradient" id="det-rm-title">-</h3>
+            <span class="badge bg-primary mb-3" id="det-rm-duration">-</span>
+            
+            <div class="border-top pt-3 text-start small">
+              <p class="mb-2"><b>Target Company:</b> <span id="det-rm-company">-</span></p>
+              <p class="mb-2"><b>Target Role:</b> <span id="det-rm-role">-</span></p>
+              <p class="mb-2"><b>Shared By:</b> <span id="det-rm-author">-</span></p>
+            </div>
+            
+            <button class="btn btn-sm btn-outline-premium w-100 mt-3" onclick="toggleLike()"><i class="bi bi-heart me-1" id="like-icon"></i><span id="like-count">0</span> Likes</button>
+          </div>
+
+          <!-- Resources & Links block -->
+          <div class="premium-card p-4 mb-4">
+            <h6 class="fw-bold mb-3 border-bottom pb-2">Reference Material</h6>
+            <div class="d-flex flex-column gap-3 small">
+              <div>
+                <b class="d-block text-primary"><i class="bi bi-book me-1"></i>Books & Notes:</b>
+                <span id="det-rm-resources">-</span>
+              </div>
+              <div id="det-rm-notes-block" class="d-none">
+                <b class="d-block text-primary"><i class="bi bi-file-earmark-pdf me-1"></i>PDF Notes File:</b>
+                <a href="" id="det-rm-notes-link" target="_blank" class="btn btn-link btn-sm p-0 text-decoration-none text-start">Download Shared PDF Notes</a>
+              </div>
+              <div>
+                <b class="d-block text-primary"><i class="bi bi-youtube me-1"></i>YouTube Channels:</b>
+                <span id="det-rm-youtube">-</span>
+              </div>
+              <div>
+                <b class="d-block text-primary"><i class="bi bi-clipboard-check me-1"></i>LeetCode Sheet:</b>
+                <span id="det-rm-leetcode">-</span>
+              </div>
+              <div>
+                <b class="d-block text-primary"><i class="bi bi-link-45deg me-1"></i>GeeksforGeeks Sheets:</b>
+                <span id="det-rm-gfg">-</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main Schedule plan -->
+        <div class="col-lg-8">
+          
+          <div class="premium-card p-4 mb-4">
+            <h5 class="fw-bold mb-3 border-bottom pb-2"><i class="bi bi-journal-code text-gradient me-2"></i>Curriculum Topics</h5>
+            <p id="det-rm-topics" class="text-secondary small">-</p>
+          </div>
+
+          <div class="premium-card p-4 mb-4">
+            <h5 class="fw-bold mb-3 border-bottom pb-2"><i class="bi bi-calendar-check text-gradient me-2"></i>Weekly Roadmap Plan</h5>
+            <div id="det-rm-weekly" class="text-secondary small" style="white-space: pre-line;">-</div>
+          </div>
+
+          <div class="premium-card p-4 mb-4">
+            <h5 class="fw-bold mb-3 border-bottom pb-2"><i class="bi bi-calendar-event text-gradient me-2"></i>Daily Schedule Routine</h5>
+            <div id="det-rm-daily" class="text-secondary small" style="white-space: pre-line;">-</div>
+          </div>
+
+          <!-- Discussion Section -->
+          <div class="premium-card p-4 mb-4">
+            <h5 class="fw-bold mb-4 border-bottom pb-2">Discussion & Comments (<span id="comments-count">0</span>)</h5>
+            <form onsubmit="handleCommentSubmit(event)" class="mb-4">
+              <div class="mb-3">
+                <textarea id="comment-input" class="form-control" rows="3" placeholder="Add comment..." required></textarea>
+              </div>
+              <button type="submit" class="btn btn-premium btn-sm">Post Comment</button>
+            </form>
+            <div id="comments-list-container" class="d-flex flex-column gap-3">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- CREATE ROADMAP MODAL -->
+  <div class="modal fade" id="createRoadmapModal" tabindex="-1" aria-labelledby="createRoadmapModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content glass-card border-0 p-3">
+        <div class="modal-header border-0">
+          <h5 class="modal-title fw-bold" id="createRoadmapModalLabel">Publish Preparation Roadmap</h5>
+          <button type="button" class="btn-close" data-bs-toggle="modal" aria-label="Close"></button>
+        </div>
+        <form onsubmit="handleRoadmapSubmit(event)">
+          <div class="modal-body border-0 d-flex flex-column gap-3">
+            <div class="row g-3">
+              <div class="col-md-12">
+                <label for="rm-title" class="form-label small fw-semibold">Roadmap Title *</label>
+                <input type="text" id="rm-title" class="form-control" placeholder="e.g. Master DSA in 3 Months" required>
+              </div>
+              <div class="col-md-6">
+                <label for="rm-company" class="form-label small fw-semibold">Target Company (Optional)</label>
+                <input type="text" id="rm-company" class="form-control" placeholder="e.g. Amazon, Google, All">
+              </div>
+              <div class="col-md-6">
+                <label for="rm-role" class="form-label small fw-semibold">Target Role (Optional)</label>
+                <input type="text" id="rm-role" class="form-control" placeholder="e.g. Software Engineer">
+              </div>
+              <div class="col-md-6">
+                <label for="rm-duration" class="form-label small fw-semibold">Duration Plan</label>
+                <input type="text" id="rm-duration" class="form-control" placeholder="e.g. 12 Weeks, 3 Months" required>
+              </div>
+              <div class="col-md-6">
+                <label for="rm-file" class="form-label small fw-semibold">Upload PDF Notes (Optional)</label>
+                <input type="file" id="rm-file" class="form-control" accept=".pdf">
+              </div>
+              <div class="col-md-12">
+                <label for="rm-topics" class="form-label small fw-semibold">Core Topics Covered *</label>
+                <input type="text" id="rm-topics" class="form-control" placeholder="e.g. Array, LinkedList, DP, Trees, SQL Querying" required>
+              </div>
+              <div class="col-12">
+                <label for="rm-weekly" class="form-label small fw-semibold">Weekly Study Breakdown *</label>
+                <textarea id="rm-weekly" class="form-control" rows="4" placeholder="Week 1: Array Basics\nWeek 2: Linked List..." required></textarea>
+              </div>
+              <div class="col-12">
+                <label for="rm-daily" class="form-label small fw-semibold">Daily Study Routine (Optional)</label>
+                <textarea id="rm-daily" class="form-control" rows="3" placeholder="Morning: solve 2 LeetCode medium questions\nEvening: read theory..."></textarea>
+              </div>
+              <div class="col-md-6">
+                <label for="rm-resources" class="form-label small fw-semibold">Recommended Books & Notes Links</label>
+                <input type="text" id="rm-resources" class="form-control" placeholder="Books or blogs links...">
+              </div>
+              <div class="col-md-6">
+                <label for="rm-youtube" class="form-label small fw-semibold">YouTube Videos/Channels Links</label>
+                <input type="text" id="rm-youtube" class="form-control" placeholder="YouTube playlists links...">
+              </div>
+              <div class="col-md-6">
+                <label for="rm-leetcode" class="form-label small fw-semibold">LeetCode Sheet Links</label>
+                <input type="text" id="rm-leetcode" class="form-control" placeholder="LeetCode profiles or custom sheets...">
+              </div>
+              <div class="col-md-6">
+                <label for="rm-gfg" class="form-label small fw-semibold">GeeksforGeeks Practice Links</label>
+                <input type="text" id="rm-gfg" class="form-control" placeholder="GFG sheets or problem sets...">
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer border-0">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-premium">Publish Roadmap</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="cc-footer-container"></div>
+
+  <!-- BootStrap & Custom JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/app.js"></script>
+  <script>
+    let activeRmId = null;
+    let allRoadmaps = [];
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      const params = new URLSearchParams(window.location.search);
+      const rmId = params.get("id");
+      
+      // Control share availability
+      const role = getRole();
+      if (role !== "placed student" && role !== "admin") {
+        document.getElementById("btn-create-roadmap").classList.add("d-none");
+      }
+      
+      if (rmId) {
+        activeRmId = rmId;
+        await loadRoadmapDetails(rmId);
+      } else {
+        await loadRoadmapsList();
+      }
+    });
+
+    async function loadRoadmapsList() {
+      const grid = document.getElementById("roadmaps-grid");
+      grid.innerHTML = `<div class="col-12 text-center py-5"><div class="spinner-border text-primary" role="status"></div></div>`;
+      try {
+        allRoadmaps = await apiCall("/roadmaps/");
+        renderRoadmapsGrid(allRoadmaps);
+      } catch (err) {
+        grid.innerHTML = `<div class="col-12 text-center text-danger">Failed to load roadmaps.</div>`;
+      }
+    }
+
+    function renderRoadmapsGrid(list) {
+      const grid = document.getElementById("roadmaps-grid");
+      if (list.length === 0) {
+        grid.innerHTML = `<div class="col-12 text-center py-5 text-muted">No preparation roadmaps shared yet.</div>`;
+        return;
+      }
+      
+      let html = "";
+      list.forEach(r => {
+        html += `
+          <div class="col-md-4">
+            <div class="glass-card p-4 h-100 d-flex flex-column justify-content-between">
+              <div>
+                <h5 class="fw-bold mb-2 text-gradient">${r.title}</h5>
+                <p class="text-muted small mb-1"><b>Target Role:</b> ${r.target_role || 'General'}</p>
+                <p class="text-muted small mb-3"><b>Target Company:</b> ${r.target_company || 'All'}</p>
+                <div class="border-top pt-2">
+                  <span class="badge bg-secondary-subtle text-secondary small">Duration: ${r.duration || 'N/A'}</span>
+                </div>
+              </div>
+              <a href="/roadmap.html?id=${r.id}" class="btn btn-outline-premium btn-sm w-100 mt-4">View Schedule Plan</a>
+            </div>
+          </div>
+        `;
+      });
+      grid.innerHTML = html;
+    }
+
+    function searchRoadmaps() {
+      const q = document.getElementById("roadmap-search").value.toLowerCase();
+      const filtered = allRoadmaps.filter(r => 
+        r.title.toLowerCase().includes(q) || 
+        (r.target_role && r.target_role.toLowerCase().includes(q)) ||
+        (r.target_company && r.target_company.toLowerCase().includes(q))
+      );
+      renderRoadmapsGrid(filtered);
+    }
+
+    function showListView() {
+      window.history.pushState({}, "", "/roadmap.html");
+      document.getElementById("roadmap-detail-view").classList.add("d-none");
+      document.getElementById("roadmap-list-view").classList.remove("d-none");
+      loadRoadmapsList();
+    }
+
+    async function loadRoadmapDetails(id) {
+      document.getElementById("roadmap-list-view").classList.add("d-none");
+      const detView = document.getElementById("roadmap-detail-view");
+      detView.classList.remove("d-none");
+      
+      try {
+        const roadmaps = await apiCall("/roadmaps/");
+        const r = roadmaps.find(x => x.id == id);
+        
+        if (!r) {
+          detView.innerHTML = `<div class="alert alert-warning">Roadmap not found.</div>`;
+          return;
+        }
+        
+        document.getElementById("det-rm-title").innerText = r.title;
+        document.getElementById("det-rm-duration").innerText = r.duration || "N/A";
+        document.getElementById("det-rm-company").innerText = r.target_company || "All Recruiters";
+        document.getElementById("det-rm-role").innerText = r.target_role || "General Role";
+        document.getElementById("det-rm-author").innerText = r.author.username;
+        
+        document.getElementById("det-rm-resources").innerText = r.resources || "No reference books linked.";
+        document.getElementById("det-rm-youtube").innerText = r.youtube_links || "No channel links provided.";
+        document.getElementById("det-rm-leetcode").innerText = r.leetcode_sheet || "No custom sheets logged.";
+        document.getElementById("det-rm-gfg").innerText = r.gfg_links || "No GFG sets linked.";
+        document.getElementById("det-rm-topics").innerText = r.topics || "General prep.";
+        document.getElementById("det-rm-weekly").innerText = r.weekly_plan || "No breakdown logged.";
+        document.getElementById("det-rm-daily").innerText = r.daily_plan || "No routine logged.";
+        
+        const pdfBlock = document.getElementById("det-rm-notes-block");
+        if (r.pdf_notes_url) {
+          pdfBlock.classList.remove("d-none");
+          document.getElementById("det-rm-notes-link").href = r.pdf_notes_url;
+        } else {
+          pdfBlock.classList.add("d-none");
+        }
+        
+        // Likes/Comments counts
+        document.getElementById("like-count").innerText = r.likes_count;
+        document.getElementById("comments-count").innerText = r.comments_count;
+        
+        await loadComments(id);
+      } catch (err) {
+        detView.innerHTML = `<div class="alert alert-danger">Error loading roadmap: ${err.message}</div>`;
+      }
+    }
+
+    async function loadComments(rmId) {
+      const container = document.getElementById("comments-list-container");
+      try {
+        const comments = await apiCall(`/interactions/comments/roadmap/${rmId}`);
+        document.getElementById("comments-count").innerText = comments.length;
+        
+        if (comments.length === 0) {
+          container.innerHTML = `<p class="text-muted small text-center py-3">No questions or reviews yet.</p>`;
+          return;
+        }
+        
+        let html = "";
+        comments.forEach(c => {
+          const avatar = c.author.profile_pic_url || `https://api.dicebear.com/7.x/adventurer/svg?seed=${c.author.username}`;
+          html += `
+            <div class="p-3 bg-light rounded" style="border-radius: var(--border-radius-sm);">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <div class="d-flex align-items-center gap-2">
+                  <img src="${avatar}" class="rounded-circle" style="width:24px; height:24px; object-fit:cover;">
+                  <span class="small fw-semibold">${c.author.username}</span>
+                </div>
+                <small class="text-muted" style="font-size:0.75rem;">${new Date(c.created_at).toLocaleDateString()}</small>
+              </div>
+              <p class="text-secondary small mb-0">${c.comment_text}</p>
+            </div>
+          `;
+        });
+        container.innerHTML = html;
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function handleCommentSubmit(e) {
+      e.preventDefault();
+      const txt = document.getElementById("comment-input").value;
+      try {
+        await apiCall("/interactions/comment", {
+          method: "POST",
+          body: {
+            parent_type: "roadmap",
+            parent_id: activeRmId,
+            comment_text: txt
+          }
+        });
+        document.getElementById("comment-input").value = "";
+        showToast("Comment posted!", "success");
+        await loadComments(activeRmId);
+      } catch (err) {
+        showToast(err.message, "danger");
+      }
+    }
+
+    async function toggleLike() {
+      try {
+        const res = await apiCall("/interactions/like", {
+          method: "POST",
+          body: { parent_type: "roadmap", parent_id: activeRmId }
+        });
+        document.getElementById("like-count").innerText = res.likes_count;
+        const icon = document.getElementById("like-icon");
+        if (res.status === "liked") {
+          icon.className = "bi bi-heart-fill text-danger";
+          showToast("Liked roadmap!", "success");
+        } else {
+          icon.className = "bi bi-heart";
+        }
+      } catch (err) {
+        showToast(err.message, "danger");
+      }
+    }
+
+    async function handleRoadmapSubmit(e) {
+      e.preventDefault();
+      
+      const payload = {
+        title: document.getElementById("rm-title").value,
+        target_company: document.getElementById("rm-company").value,
+        target_role: document.getElementById("rm-role").value,
+        duration: document.getElementById("rm-duration").value,
+        topics: document.getElementById("rm-topics").value,
+        weekly_plan: document.getElementById("rm-weekly").value,
+        daily_plan: document.getElementById("rm-daily").value,
+        resources: document.getElementById("rm-resources").value,
+        youtube_links: document.getElementById("rm-youtube").value,
+        leetcode_sheet: document.getElementById("rm-leetcode").value,
+        gfg_links: document.getElementById("rm-gfg").value
+      };
+      
+      try {
+        const createdRm = await apiCall("/roadmaps/", {
+          method: "POST",
+          body: payload
+        });
+        
+        // Handle PDF upload if selected
+        const fileInput = document.getElementById("rm-file");
+        if (fileInput.files.length > 0) {
+          const fileFormData = new FormData();
+          fileFormData.append("file", fileInput.files[0]);
+          await apiCall(`/roadmaps/${createdRm.id}/notes`, {
+            method: "POST",
+            body: fileFormData
+          });
+        }
+        
+        showToast("Roadmap shared successfully!", "success");
+        bootstrap.Modal.getInstance(document.getElementById("createRoadmapModal")).hide();
+        document.getElementById("createRoadmapModal").querySelector("form").reset();
+        await loadRoadmapsList();
+      } catch (err) {
+        showToast(err.message, "danger");
+      }
+    }
+  </script>
+</body>
+</html>
